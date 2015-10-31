@@ -5,10 +5,13 @@ class SearchProductsController < ApplicationController
   end
 
   def get_products
-    res = Amazon::Ecs.item_search('ruby', :search_index => 'All')
+    res = Amazon::Ecs.item_search(
+      params[:keyword],
+      :search_index => params[:category],
+      :country      => 'jp'
+    )
 
-    puts params[:keyword]
-    puts res
+    puts res.first_item
   end
 
 end
