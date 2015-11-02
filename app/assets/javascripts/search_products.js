@@ -10,7 +10,8 @@ $(function() {
         url = url
             + 'keyword='         + keyword.val()
             + '&negative_match=' + negative_match.val()
-            + '&category='       + category.val();
+            + '&category='       + category.val()
+            + '&page='           + 1;
         if ( is_prime.prop('checked') ) {
             url = url + '&is_prime=1';
         } else {
