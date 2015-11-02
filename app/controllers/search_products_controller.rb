@@ -18,14 +18,20 @@ class SearchProductsController < ApplicationController
     res.items.each do |item|
       item_attributes = item.get_element('ItemAttributes')
 
-      title = item_attributes.get('Title')
-      price = item_attributes.get('ListPrice/Amount')
+      title    = item_attributes.get('Title')
+      price    = item_attributes.get('ListPrice/Amount')
+      headline = item_attributes.get('Brand')
 
       url = item.get('DetailPageURL')
 
       puts title, price, url
 
-      @items.push({ 'title' => title, 'price' => price, 'url' => url })
+      @items.push({
+                    'title'    => title,
+                    'url'      => url,
+                    'price'    => price,
+                    'headline' => headline
+                  })
     end
 
     puts @items
