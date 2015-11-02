@@ -9,13 +9,14 @@ class SearchProductsController < ApplicationController
       params[:keyword],
       :search_index   => params[:category],
       :response_group => 'Large',
-      :country        => 'jp'
+      :country        => 'jp',
+      :item_page      => params[:page]
     )
-
-    puts res.first_item
 
     @items = []
     res.items.each do |item|
+
+      puts item
       item_attributes = item.get_element('ItemAttributes')
 
       title    = item_attributes.get('Title')
@@ -33,6 +34,13 @@ class SearchProductsController < ApplicationController
                     'headline' => headline
                   })
     end
+
+    @item_total = res.total_results
+
+    @page = {
+      'last_page'    => res.total_pages > 10 ? 10 : res.total_pages,
+      'current_page' => params[:page]
+    }
 
     puts @items
   end
