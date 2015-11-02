@@ -26,6 +26,7 @@ module AmazonProductSearch
       :AWS_secret_key    => ENV["AWS_SECRET_KEY"],
       :associate_tag     => ENV["ASSOCIATE_TAG"]
     }
+    Amazon::Ecs.debug = true
 
   end
 end
