@@ -24,7 +24,7 @@ class SearchProductsController < ApplicationController
 
       url = item.get('DetailPageURL')
 
-      puts title, price, url
+      features = item_attributes.get_elements('Feature')
 
       @items.push({
                     'title'    => title,
