@@ -5,8 +5,15 @@ class SearchProductsController < ApplicationController
   end
 
   def get_products
+
+    keyword        = params[:keyword]
+    negative_match = params[:negative_match]
+    negative_match.split.each do |word|
+      keyword << " -#{word}"
+    end
+
     res = Amazon::Ecs.item_search(
-      params[:keyword],
+      keyword,
       :search_index   => params[:category],
       :response_group => 'Large',
       :country        => 'jp',
@@ -15,8 +22,6 @@ class SearchProductsController < ApplicationController
 
     @items = []
     res.items.each do |item|
-
-      puts item
       item_attributes = item.get_element('ItemAttributes')
 
       title    = item_attributes.get('Title')
