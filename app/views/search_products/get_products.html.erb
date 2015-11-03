@@ -1,6 +1,26 @@
 <div class="container">
 
-  <div class="alert alert-info" role="alert">該当する商品は <b><%= @search_info['item_total']%></b> 件あります。(csvダウンロードできるのは最大 <%= @search_info['max_export']%> 件)</div>
+  <ul class="list-inline">
+    <li>
+      <b>キーワード</b>
+      <%= @search_info['keyword'] %>
+    </li>
+    <li>
+      <b>除外ワード</b>
+      <%= @search_info['negative_match'] %>
+    </li>
+    <li>
+      <b>カテゴリ</b>
+      <%= @search_info['category'] %>
+    </li>
+    <% if @search_info['is_prime'] == 1 then %>
+    <li>
+      <b>Amazonプライム指定</b>
+    </li>
+    <% end %>
+  </ul>
+
+  <div class="alert alert-info" role="alert">該当する商品は <b><%= @search_info['item_total'] %></b> 件あります。(csvダウンロードできるのは最大 <%= @search_info['max_export'] %> 件)</div>
 
   <table class="table table-striped table-hover">
     <thead>

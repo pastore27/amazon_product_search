@@ -7,14 +7,19 @@ class SearchProductsController < ApplicationController
 
   def get_products
 
+    search_word    = ''
     keyword        = params[:keyword]
     negative_match = params[:negative_match]
+
+    keyword.split.each do |word|
+      search_word << word
+    end
     negative_match.split.each do |word|
-      keyword << " -#{word}"
+      search_word << " -#{word}"
     end
 
     res = Amazon::Ecs.item_search(
-      keyword,
+      search_word,
       :search_index   => params[:category],
       :response_group => 'Large',
       :country        => 'jp',
@@ -47,8 +52,6 @@ class SearchProductsController < ApplicationController
       'last_page'    => res.total_pages > 10 ? max_page : res.total_pages,
       'current_page' => params[:page]
     }
-
-    puts @items
 
     @search_info = {
       'keyword'        => params[:keyword],
