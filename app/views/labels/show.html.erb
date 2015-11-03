@@ -1,0 +1,30 @@
+<div class="container">
+
+  <a href="/labels/new">
+    <button class="btn btn-primary">新規作成</button>
+  </a>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>ラベル名</th>
+        <th>編集</th>
+        <th>削除</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @labels.each do |label| %>
+      <tr>
+        <td><%= label.name %></td>
+        <td>
+          <a href="/labels/<%= label.id %>/update">編集</a>
+        </td>
+        <td>
+          <a href="/labels/<%= label.id %>/delete">削除</a>
+        </td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div>
