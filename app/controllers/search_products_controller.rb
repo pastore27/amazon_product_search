@@ -1,3 +1,4 @@
+# coding: utf-8
 class SearchProductsController < ApplicationController
 
   def show
@@ -6,14 +7,19 @@ class SearchProductsController < ApplicationController
 
   def get_products
 
+    search_word    = ''
     keyword        = params[:keyword]
     negative_match = params[:negative_match]
+
+    keyword.split.each do |word|
+      search_word << word
+    end
     negative_match.split.each do |word|
-      keyword << " -#{word}"
+      search_word << " -#{word}"
     end
 
     res = Amazon::Ecs.item_search(
-      keyword,
+      search_word,
       :search_index   => params[:category],
       :response_group => 'Large',
       :country        => 'jp',
@@ -40,14 +46,23 @@ class SearchProductsController < ApplicationController
                   })
     end
 
-    @item_total = res.total_results
-
+    # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
+    max_page = params[:category] == "All" ? 5 : 10;
     @page = {
-      'last_page'    => res.total_pages > 10 ? 10 : res.total_pages,
-      'current_page' => params[:page]
+      'last_page'    => res.total_pages > 10 ? max_page : res.total_pages,
+      'current_page' => params[:page].to_i
     }
 
-    puts @items
+    @search_info = {
+      'keyword'        => params[:keyword],
+      'negative_match' => params[:negative_match],
+      'category'       => params[:category],
+      'is_prime'       => params[:is_prime],
+      'page'           => params[:page],
+      'item_total'     => res.total_results,
+      'max_export'     => max_page * 10
+    }
+
   end
 
 end
