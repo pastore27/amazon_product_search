@@ -1,0 +1,9 @@
+<div class="container">
+  <%= form_tag("/labels/#{@label.id}/update", method: :post) do %>
+    <div class="form-group">
+      <label>ラベル名</label>
+      <input name="name" class="form-control" value="<%= @label.name %>">
+    </div>
+    <%= submit_tag '更新', :class => "btn btn-primary" %>
+  <% end %>
+</div>

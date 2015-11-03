@@ -15,7 +15,7 @@
     </li>
     <% if @search_info['is_prime'] == 1 then %>
     <li>
-      <b>Amazonプライム指定</b>
+      <b>Amazonプライム指定あり</b>
     </li>
     <% end %>
   </ul>
@@ -60,5 +60,23 @@
     </ul>
   </nav>
 
-  <button type="submit" class="btn btn-primary">検索条件を保存</button>
+  <%= form_tag("/search_products/create", method: :post) do %>
+  <div class="pull-right">
+    <div class="form-group">
+      <select name="label_id" class="form-control">
+        <% @labels.each do |label| %>
+        <option value="<%= label.id %>"><%= label.name %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <input type="hidden" name="keyword" value="<%= @search_info['keyword'] %>">
+    <input type="hidden" name="negative_match" value="<%= @search_info['negative_match'] %>">
+    <input type="hidden" name="category" value="<%= @search_info['category'] %>">
+    <input type="hidden" name="is_prime" value="<%= @search_info['is_prime'] %>">
+
+    <%= submit_tag '上記ラベルで検索条件を保存', :class => "btn btn-primary" %>
+  </div>
+  <% end %>
+
 </div>

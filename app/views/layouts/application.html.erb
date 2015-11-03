@@ -10,11 +10,12 @@
   <nav class="navbar navbar-default">
     <div class="container">
       <div class="navbar-header">
-        <a class="navbar-brand">Amazon商品検索</a>
+        <a href="/search_products" class="navbar-brand">Amazon商品検索</a>
       </div>
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/search_products">商品検索</a></li>
-        <li><a href="#">在庫検索</a></li>
+        <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
+        <li <% if controller.controller_name == "" %>class="active"<% end %>><a href="#">在庫検索</a></li>
+        <li <% if controller.controller_name == "labels" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
       </ul>
     </div>
   </nav>
