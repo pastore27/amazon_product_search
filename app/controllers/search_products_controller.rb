@@ -2,7 +2,7 @@
 class SearchProductsController < ApplicationController
 
   def show
-
+    @search_conditions = SearchCondition.all
   end
 
   def get_products
@@ -63,6 +63,20 @@ class SearchProductsController < ApplicationController
       'max_export'     => max_page * 10
     }
 
+    @labels = Label.all
+  end
+
+  def create_search_condition
+    search_condition = SearchCondition.new(
+      :label_id       => params['label_id'],
+      :keyword        => params['keyword'],
+      :negative_match => params['negative_match'],
+      :category       => params['category'],
+      :is_prime       => params['is_prime']
+    )
+    search_condition.save
+
+    redirect_to :action => 'show'
   end
 
 end

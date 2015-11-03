@@ -10,8 +10,8 @@ class LabelsController < ApplicationController
 
   def create
     label = Label.new(
-        :name => params['name']
-      )
+      :name => params['name']
+    )
     label.save
 
     redirect_to :action => 'show'
