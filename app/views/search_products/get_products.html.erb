@@ -51,7 +51,7 @@
     <ul class="pagination">
       <% pages = (1..@page['last_page']).to_a %>
       <% pages.each do |page| %>
-      <li <% if page == @page['current_page'] %>class="active"<% end %> value="<%= page %>">
+      <li <% if page == @page['current_page'] then %>class="active"<% end %> value="<%= page %>">
         <a href="#">
           <%= page %>
         </a>

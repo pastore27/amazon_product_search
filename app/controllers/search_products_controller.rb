@@ -50,7 +50,7 @@ class SearchProductsController < ApplicationController
     max_page = params[:category] == "All" ? 5 : 10;
     @page = {
       'last_page'    => res.total_pages > 10 ? max_page : res.total_pages,
-      'current_page' => params[:page]
+      'current_page' => params[:page].to_i
     }
 
     @search_info = {
