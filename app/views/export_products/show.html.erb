@@ -2,4 +2,16 @@
 
   <h4>商品抽出</h4>
 
+  <%= form_tag('/export_products/csv', method: :post) do %>
+    <div class="form-group">
+      <label>ラベル</label>
+      <select name="label_id" class="form-control">
+        <% @labels.each do |label| %>
+        <option value="<%= label.id %>"><%= label.name %></option>
+        <% end %>
+      </select>
+    </div>
+    <%= submit_tag 'CSVダウンロード', :class => "btn btn-primary" %>
+  <% end %>
+
 </div>
