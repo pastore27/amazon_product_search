@@ -57,7 +57,7 @@ class SearchProductsController < ApplicationController
       'keyword'        => params[:keyword],
       'negative_match' => params[:negative_match],
       'category'       => params[:category],
-      'is_prime'       => params[:is_prime],
+      'is_prime'       => params[:is_prime].to_i,
       'page'           => params[:page],
       'item_total'     => res.total_results,
       'max_export'     => max_page * 10

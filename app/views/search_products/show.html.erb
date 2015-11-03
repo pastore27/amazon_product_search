@@ -62,13 +62,15 @@
       </tr>
     </thead>
     <tbody id="tbody">
+      <% @search_conditions.each do |search_condition| %>
       <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><%= search_condition.label_id %></td>
+        <td><%= search_condition.keyword %></td>
+        <td><%= search_condition.negative_match %></td>
+        <td><%= search_condition.category %></td>
+        <td><% if search_condition.is_prime == 1 %>あり<% end %></td>
       </tr>
+      <% end %>
     </tbody>
   </table>
 
