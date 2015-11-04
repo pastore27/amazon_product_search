@@ -15,12 +15,11 @@ class SearchProductsController < ApplicationController
       'negative_match' => params['negative_match'],
       'category'       => params['category'],
       'is_prime'       => params['is_prime'].to_i,
-      'page'           => params['page'],
       'max_export'     => max_page * 10
     }
 
     # APIリクエスト
-    (res, @items) = req_api(@search_info)
+    (res, @items) = req_search_api(@search_info, params['page'])
 
     @search_info['item_total'] = res.total_results
 
@@ -44,44 +43,4 @@ class SearchProductsController < ApplicationController
     redirect_to :action => 'show'
   end
 
-  def req_api(condition)
-    search_word    = ''
-    keyword        = condition['keyword']
-    negative_match = condition['negative_match']
-
-    keyword.split.each do |word|
-      search_word << " #{word}"
-    end
-    negative_match.split.each do |word|
-      search_word << " -#{word}"
-    end
-
-    res = Amazon::Ecs.item_search(
-      search_word,
-      :search_index   => condition['category'],
-      :response_group => 'Large',
-      :country        => 'jp',
-      :item_page      => condition['page']
-    )
-
-    items = []
-    res.items.each do |item|
-      item_attributes = item.get_element('ItemAttributes')
-
-      title    = item_attributes.get('Title')
-      price    = item_attributes.get('ListPrice/Amount')
-      headline = item_attributes.get('Brand')
-      url      = item.get('DetailPageURL')
-      features = item_attributes.get_elements('Feature')
-
-      items.push({
-                   'title'    => title,
-                   'url'      => url,
-                   'price'    => price,
-                   'headline' => headline
-                 })
-    end
-
-    return res, items
-  end
 end
