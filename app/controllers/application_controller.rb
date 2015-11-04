@@ -9,10 +9,10 @@ class ApplicationController < ActionController::Base
     negative_match = condition['negative_match']
 
     keyword.split.each do |word|
-      search_word << " #{word}"
+      search_word << "#{word} "
     end
     negative_match.split.each do |word|
-      search_word << " -#{word}"
+      search_word << "-#{word} "
     end
 
     retry_count = 0
