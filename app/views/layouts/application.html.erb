@@ -14,6 +14,7 @@
       </div>
       <ul class="nav navbar-nav">
         <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
+        <li <% if controller.controller_name == "export_products" %>class="active"<% end %>><a href="/export_products">商品抽出</a></li>
         <li <% if controller.controller_name == "" %>class="active"<% end %>><a href="#">在庫検索</a></li>
         <li <% if controller.controller_name == "labels" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
       </ul>

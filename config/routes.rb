@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   get  "/search_products/products" => "search_products#get_products"
   post "/search_products/create"   => "search_products#create_search_condition"
 
+  get  "/export_products"     => "export_products#show"
+  post "/export_products/csv" => "export_products#download", format: "csv"
+
   get  "/labels"            => "labels#show"
   get  "/labels/new"        => "labels#create_form"
   post "/labels/create"     => "labels#create"
