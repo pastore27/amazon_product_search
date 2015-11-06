@@ -42,7 +42,11 @@
         商品仕様
       </th>
       <td style="padding: 20px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
-        <%= item['feature'] %>
+        <ul>
+          <%- item['features'].each do |feature| -%>
+          <li><%= feature -%></li>
+          <%- end -%>
+        </ul>
       </td>
     </tr>
   </tbody>

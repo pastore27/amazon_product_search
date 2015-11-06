@@ -36,7 +36,8 @@ class ExportProductsController < ApplicationController
                           'asin'     => fetched_item['asin'],
                           'title'    => fetched_item['title'],
                           'price'    => fetched_item['price'].to_i,
-                          'headline' => fetched_item['headline']
+                          'headline' => fetched_item['headline'],
+                          'features' => fetched_item['features']
                         })
       else
         next

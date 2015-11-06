@@ -44,7 +44,7 @@ class ApplicationController < ActionController::Base
                    'url'      => item.get('DetailPageURL'),
                    'price'    => item_attributes.get('ListPrice/Amount'),
                    'headline' => item_attributes.get('Brand'),
-                   'features' => item_attributes.get_elements('Feature')
+                   'features' => item_attributes.get_array('Feature')
                  })
     end
 

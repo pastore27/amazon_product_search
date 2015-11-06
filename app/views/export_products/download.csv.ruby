@@ -13,7 +13,7 @@ csv_str = CSV.generate do |csv|
     csv_body['name']        = item['title']
     csv_body['code']        = item['asin']
     csv_body['headline']    = item['headline']
-    csv_body['caption']     = ERB.new(caption_erb).result(binding)
+    csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
     csv_body['explanation'] = @csv_option['explanation'] if @csv_option['explanation']
 
     # 金額調整
