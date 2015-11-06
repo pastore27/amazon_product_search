@@ -6,11 +6,13 @@ class ExportProductsController < ApplicationController
   end
 
   def download
+    # ラベルに紐づく検索条件を取得
     label_id = params['label_id']
-
     search_conditions = SearchCondition.where(label_id: label_id)
     puts search_conditions.length
 
+    # Amazon APIよりデータを取得
+    # APIリクエスト数の最大値は、search_conditions.length * 10
     fetched_items = []
     search_conditions.each do |condition|
       max_page = condition['category'] == "All" ? 5 : 10;
@@ -21,8 +23,9 @@ class ExportProductsController < ApplicationController
       end
     end
 
-    @csv_items = []
+    # csv出力するデータを選定
     # dbに保存
+    @csv_items = []
     fetched_items.each do |fetched_item|
       item = Item.new(
         :label_id => label_id,
@@ -38,6 +41,9 @@ class ExportProductsController < ApplicationController
         next
       end
     end
+
+    # csv出力オプション
+    
 
     # csv出力
     respond_to do |format|

@@ -1,6 +1,6 @@
 <div class="container">
 
-  <h4>商品抽出</h4>
+  <h3>商品抽出</h3>
 
   <%= form_tag('/export_products/csv', method: :post) do %>
     <div class="form-group">
@@ -11,6 +11,36 @@
         <% end %>
       </select>
     </div>
+
+    <h4>オプション</h4>
+
+    <div class="form-group">
+      <label>path 指定</label>
+      <input name="path" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>price 一括調整</label>
+      <div>
+        <div class="radio-inline">
+          <label>
+            <input type="radio" name="price-option-unit" class="price-option-unit" value="yen" checked>円
+          </label>
+        </div>
+        <div class="radio-inline">
+          <label>
+            <input type="radio" name="price-option-unit" class="price-option-unit" value="per">%
+          </label>
+        </div>
+      </div>
+      <input id="price-option-value" name="template" class="form-control" type="number">
+      <div id="price-option-preview"></div>
+    </div>
+
+    <div class="form-group">
+      <label>template 指定</label>
+      <input name="template" class="form-control">
+    </div>
+
     <%= submit_tag 'CSVダウンロード', :class => "btn btn-primary" %>
   <% end %>
 
