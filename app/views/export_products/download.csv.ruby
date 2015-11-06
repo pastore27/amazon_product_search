@@ -1,5 +1,6 @@
-csv_header    = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
-
+csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
+# テンプレートファイルを開く
+caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
 
 csv_str = CSV.generate do |csv|
   # header の追加
@@ -12,7 +13,7 @@ csv_str = CSV.generate do |csv|
     csv_body['name']        = item['title']
     csv_body['code']        = item['asin']
     csv_body['headline']    = item['headline']
-    csv_body['caption']     = item['title']
+    csv_body['caption']     = ERB.new(caption_erb).result(binding)
     csv_body['explanation'] = @csv_option['explanation'] if @csv_option['explanation']
 
     # 金額調整
@@ -30,3 +31,4 @@ end
 
 # 文字コード変換
 NKF::nkf('--sjis -Lw', csv_str)
+
