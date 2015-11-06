@@ -33,8 +33,9 @@ class ExportProductsController < ApplicationController
       )
       if item.save
         @csv_items.push({
+                          'asin'     => fetched_item['asin'],
                           'title'    => fetched_item['title'],
-                          'price'    => fetched_item['price'],
+                          'price'    => fetched_item['price'].to_i,
                           'headline' => fetched_item['headline']
                         })
       else
@@ -43,7 +44,12 @@ class ExportProductsController < ApplicationController
     end
 
     # csv出力オプション
-    
+    @csv_option = {
+      'path'               => params['path'],
+      'explanation'        => params['explanation'],
+      'price_option_unit'  => params['price_option_unit'],
+      'price_option_value' => params['price_option_value'].to_f,
+    }
 
     # csv出力
     respond_to do |format|

@@ -15,7 +15,7 @@ $(function() {
 
     update_preview = function () {
         var value = price_option_value.val();
-        var unit  = $('input[name="price-option-unit"]:checked').val();
+        var unit  = $('input[name="price_option_unit"]:checked').val();
         if (unit === 'yen') {
             price_option_preview.text('商品価格 + ' + value + ' 円');
         } else if (unit === 'per') {
