@@ -25,12 +25,10 @@
   <table class="table table-striped table-hover">
     <thead>
       <tr>
-        <th>Titile</th>
-        <th>Price</th>
-        <th>Headline</th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th>商品名</th>
+        <th>価格</th>
+        <th>ブランド</th>
+        <th>プライム</th>
       </tr>
     </thead>
     <tbody id="tbody">
@@ -39,9 +37,7 @@
         <td><a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a></td>
         <td><%= item['price'] %></td>
         <td><%= item['headline'] %></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td><% if item['is_prime'] == '1' %>◯<% end %></td>
       </tr>
       <% end %>
     </tbody>

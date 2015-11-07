@@ -36,7 +36,8 @@ class ApplicationController < ActionController::Base
 
     items = []
     res.items.each do |item|
-      item_attributes = item.get_element('ItemAttributes')
+      item_attributes    = item.get_element('ItemAttributes')
+      item_offer_listing = item.get_element('Offers/Offer/OfferListing')
 
       items.push({
                    'asin'     => item.get('ASIN'),
@@ -45,7 +46,8 @@ class ApplicationController < ActionController::Base
                    'url'      => item.get('DetailPageURL'),
                    'price'    => item_attributes.get('ListPrice/Amount'),
                    'headline' => item_attributes.get('Brand'),
-                   'features' => item_attributes.get_array('Feature')
+                   'features' => item_attributes.get_array('Feature'),
+                   'is_prime' => item_offer_listing.get('IsEligibleForPrime')
                  })
     end
 
