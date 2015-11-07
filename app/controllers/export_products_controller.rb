@@ -34,6 +34,7 @@ class ExportProductsController < ApplicationController
       if item.save
         @csv_items.push({
                           'asin'     => fetched_item['asin'],
+                          'jan'      => fetched_item['jan'],
                           'title'    => fetched_item['title'],
                           'price'    => fetched_item['price'].to_i,
                           'headline' => fetched_item['headline'],
