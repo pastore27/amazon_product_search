@@ -1,3 +1,4 @@
+# coding: utf-8
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -47,7 +48,8 @@ class ApplicationController < ActionController::Base
                    'price'    => item_attributes.get('ListPrice/Amount'),
                    'headline' => item_attributes.get('Brand'),
                    'features' => item_attributes.get_array('Feature'),
-                   'is_prime' => item_offer_listing.get('IsEligibleForPrime')
+                   # item.get_element('Offers/Offer/OfferListing') が取得できないことがある。
+                   'is_prime' => item_offer_listing ? item_offer_listing.get('IsEligibleForPrime') : 0
                  })
     end
 
