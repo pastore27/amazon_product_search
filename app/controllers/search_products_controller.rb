@@ -10,7 +10,7 @@ class SearchProductsController < ApplicationController
       'keyword'        => params['keyword'],
       'negative_match' => params['negative_match'],
       'category'       => params['category'],
-      'is_prime'       => params['is_prime'].to_i
+      'is_prime'       => params['is_prime']
     }
 
     # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
