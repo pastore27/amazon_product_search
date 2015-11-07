@@ -13,11 +13,18 @@ class SearchProductsController < ApplicationController
       'is_prime'       => params['is_prime'].to_i
     }
 
+    # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
+    max_page = params[:category] == "All" ? 5 : 10;
+
     # APIリクエスト
-    @items = req_search_api(@search_info, params['page'])
+    @items = []
+    (1..max_page).each do |page|
+      @items.concat(req_search_api(@search_info, page))
+      # Amazon APIの規約に従う
+      sleep(1)
+    end
 
     @search_info['item_total'] = @items.length
-
     @labels = Label.all
   end
 
