@@ -1,16 +1,19 @@
 <div class="container">
-  <form>
+
+  <h3>商品検索</h3>
+
+  <%= form_tag('/search_products/products', method: :post) do %>
     <div class="form-group">
       <label>キーワード</label>
-      <input id="keyword" class="form-control">
+      <input name="keyword" class="form-control">
     </div>
     <div class="form-group">
       <label>除外ワード</label>
-      <input id="negative-match" class="form-control">
+      <input name="negative_match" class="form-control">
     </div>
     <div class="form-group">
       <label>カテゴリ</label>
-      <select id="category" class="form-control">
+      <select name="category" class="form-control">
         <option value="All">すべてのカテゴリー</option>
         <option value="Books">本</option>
         <option value="ForeignBooks">洋書</option>
@@ -44,12 +47,11 @@
     </div>
     <div class="checkbox">
       <label>
-        <input id="is_prime" type="checkbox">Amazonプライム指定
+        <input name="is_prime" type="checkbox">Amazonプライム指定
       </label>
     </div>
-  </form>
-
-  <button type="submit" class="btn btn-primary">新規条件で検索</button>
+    <%= submit_tag '新規条件で検索', :class => "btn btn-primary" %>
+  <% end %>
 
   <hr>
 

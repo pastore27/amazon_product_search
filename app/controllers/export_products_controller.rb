@@ -17,7 +17,7 @@ class ExportProductsController < ApplicationController
     search_conditions.each do |condition|
       max_page = condition['category'] == "All" ? 5 : 10;
       (1..max_page).each do |page|
-        fetched_items.concat(req_search_api(condition, page)[1])
+        fetched_items.concat(req_search_api(condition, page))
         # Amazon APIの規約に従う
         sleep(1)
       end

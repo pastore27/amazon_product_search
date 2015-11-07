@@ -1,3 +1,4 @@
+# coding: utf-8
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
@@ -36,20 +37,33 @@ class ApplicationController < ActionController::Base
 
     items = []
     res.items.each do |item|
-      item_attributes = item.get_element('ItemAttributes')
+      item_attributes    = item.get_element('ItemAttributes')
+      item_offer_listing = item.get_element('Offers/Offer/OfferListing')
 
-      items.push({
-                   'asin'     => item.get('ASIN'),
-                   'jan'      => item_attributes.get('EAN'),
-                   'title'    => item_attributes.get('Title'),
-                   'url'      => item.get('DetailPageURL'),
-                   'price'    => item_attributes.get('ListPrice/Amount'),
-                   'headline' => item_attributes.get('Brand'),
-                   'features' => item_attributes.get_array('Feature')
-                 })
+      is_prime = item_offer_listing ? item_offer_listing.get('IsEligibleForPrime') : 0
+
+      insert_item = {
+        'asin'     => item.get('ASIN'),
+        'jan'      => item_attributes.get('EAN'),
+        'title'    => item_attributes.get('Title'),
+        'url'      => item.get('DetailPageURL'),
+        'price'    => item_attributes.get('ListPrice/Amount'),
+        'headline' => item_attributes.get('Brand'),
+        'features' => item_attributes.get_array('Feature'),
+        # item.get_element('Offers/Offer/OfferListing') が取得できないことがある。
+        'is_prime' => is_prime
+      }
+
+      if condition['is_prime'] == 'on' then
+        if is_prime == '1' then
+          items.push(insert_item)
+        end
+      else
+        items.push(insert_item)
+      end
     end
 
-    return res, items
+    return items
   end
 
 end

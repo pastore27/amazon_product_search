@@ -6,27 +6,25 @@ class SearchProductsController < ApplicationController
   end
 
   def get_products
-
-    # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
-    max_page = params[:category] == "All" ? 5 : 10;
-
     @search_info = {
       'keyword'        => params['keyword'],
       'negative_match' => params['negative_match'],
       'category'       => params['category'],
-      'is_prime'       => params['is_prime'].to_i,
-      'max_export'     => max_page * 10
+      'is_prime'       => params['is_prime']
     }
+
+    # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
+    max_page = params[:category] == "All" ? 5 : 10;
 
     # APIリクエスト
-    (res, @items) = req_search_api(@search_info, params['page'])
+    @items = []
+    (1..max_page).each do |page|
+      @items.concat(req_search_api(@search_info, page))
+      # Amazon APIの規約に従う
+      sleep(1)
+    end
 
-    @search_info['item_total'] = res.total_results
-
-    @page = {
-      'last_page'    => res.total_pages > 10 ? max_page : res.total_pages,
-      'current_page' => params['page'].to_i
-    }
+    @search_info['item_total'] = @items.length
     @labels = Label.all
   end
 

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   get  "/search_products"          => "search_products#show"
-  get  "/search_products/products" => "search_products#get_products"
+  post "/search_products/products" => "search_products#get_products"
   post "/search_products/create"   => "search_products#create_search_condition"
 
   get  "/export_products"     => "export_products#show"
