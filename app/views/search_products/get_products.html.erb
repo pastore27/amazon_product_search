@@ -20,7 +20,7 @@
     <% end %>
   </ul>
 
-  <div class="alert alert-info" role="alert">該当する商品は <b><%= @search_info['item_total'] %></b> 件あります。(csvダウンロードできるのは最大 <%= @search_info['max_export'] %> 件)</div>
+  <div class="alert alert-info" role="alert">該当する商品は <b><%= @search_info['item_total'] %></b> 件あります。</div>
 
   <table class="table table-striped table-hover">
     <thead>
@@ -42,19 +42,6 @@
       <% end %>
     </tbody>
   </table>
-
-  <nav>
-    <ul class="pagination">
-      <% pages = (1..@page['last_page']).to_a %>
-      <% pages.each do |page| %>
-      <li <% if page == @page['current_page'] then %>class="active"<% end %> value="<%= page %>">
-        <a href="#">
-          <%= page %>
-        </a>
-      </li>
-      <% end %>
-    </ul>
-  </nav>
 
   <%= form_tag("/search_products/create", method: :post) do %>
   <div class="pull-right">

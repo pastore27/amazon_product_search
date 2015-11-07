@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
                  })
     end
 
-    return res, items
+    return items
   end
 
 end
