@@ -6,11 +6,13 @@ class ExportProductsController < ApplicationController
   end
 
   def download
+    # ラベルに紐づく検索条件を取得
     label_id = params['label_id']
-
     search_conditions = SearchCondition.where(label_id: label_id)
     puts search_conditions.length
 
+    # Amazon APIよりデータを取得
+    # APIリクエスト数の最大値は、search_conditions.length * 10
     fetched_items = []
     search_conditions.each do |condition|
       max_page = condition['category'] == "All" ? 5 : 10;
@@ -21,8 +23,9 @@ class ExportProductsController < ApplicationController
       end
     end
 
-    @csv_items = []
+    # csv出力するデータを選定
     # dbに保存
+    @csv_items = []
     fetched_items.each do |fetched_item|
       item = Item.new(
         :label_id => label_id,
@@ -30,14 +33,25 @@ class ExportProductsController < ApplicationController
       )
       if item.save
         @csv_items.push({
+                          'asin'     => fetched_item['asin'],
+                          'jan'      => fetched_item['jan'],
                           'title'    => fetched_item['title'],
-                          'price'    => fetched_item['price'],
-                          'headline' => fetched_item['headline']
+                          'price'    => fetched_item['price'].to_i,
+                          'headline' => fetched_item['headline'],
+                          'features' => fetched_item['features']
                         })
       else
         next
       end
     end
+
+    # csv出力オプション
+    @csv_option = {
+      'path'               => params['path'],
+      'explanation'        => params['explanation'],
+      'price_option_unit'  => params['price_option_unit'],
+      'price_option_value' => params['price_option_value'].to_f,
+    }
 
     # csv出力
     respond_to do |format|

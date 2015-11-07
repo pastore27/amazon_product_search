@@ -40,11 +40,12 @@ class ApplicationController < ActionController::Base
 
       items.push({
                    'asin'     => item.get('ASIN'),
+                   'jan'      => item_attributes.get('EAN'),
                    'title'    => item_attributes.get('Title'),
                    'url'      => item.get('DetailPageURL'),
                    'price'    => item_attributes.get('ListPrice/Amount'),
                    'headline' => item_attributes.get('Brand'),
-                   'features' => item_attributes.get_elements('Feature')
+                   'features' => item_attributes.get_array('Feature')
                  })
     end
 
