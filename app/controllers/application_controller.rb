@@ -72,8 +72,11 @@ class ApplicationController < ActionController::Base
 
     # 重複を削除する
     ret_items.uniq! {|item| item['asin']}
+
     return ret_items
   end
+
+
 
   # asinsの配列から商品情報を取得する
   def req_lookup_api(asins)
@@ -121,6 +124,8 @@ class ApplicationController < ActionController::Base
 
     return ret_items
   end
+
+
 
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除

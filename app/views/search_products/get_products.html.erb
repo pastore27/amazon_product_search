@@ -34,7 +34,13 @@
     <tbody id="tbody">
       <% @items.each do |item| %>
       <tr>
-        <td><a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a></td>
+        <td>
+          <% if item['url'] %>
+          <a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a>
+          <% else %>
+          <%= item['title'] %>
+          <% end %>
+        </td>
         <td><%= item['price'] %></td>
         <td><%= item['headline'] %></td>
         <td><% if item['is_prime'] == '1' %>◯<% end %></td>
