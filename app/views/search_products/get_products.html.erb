@@ -34,7 +34,13 @@
     <tbody id="tbody">
       <% @items.each do |item| %>
       <tr>
-        <td><a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a></td>
+        <td>
+          <% if item['url'] %>
+          <a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a>
+          <% else %>
+          <%= item['title'] %>
+          <% end %>
+        </td>
         <td><%= item['price'] %></td>
         <td><%= item['headline'] %></td>
         <td><% if item['is_prime'] == '1' %>◯<% end %></td>
@@ -56,7 +62,7 @@
     <input type="hidden" name="keyword" value="<%= @search_info['keyword'] %>">
     <input type="hidden" name="negative_match" value="<%= @search_info['negative_match'] %>">
     <input type="hidden" name="category" value="<%= @search_info['category'] %>">
-    <input type="hidden" name="is_prime" value="<%= @search_info['is_prime'] %>">
+    <input type="hidden" name="is_prime" value="<% if @search_info['is_prime'] == 'on' then %>1<% else %>0<% end %>">
 
     <%= submit_tag '上記ラベルで検索条件を保存', :class => "btn btn-primary" %>
   </div>
