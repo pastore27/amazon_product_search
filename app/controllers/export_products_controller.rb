@@ -24,8 +24,31 @@ class ExportProductsController < ApplicationController
     end
 
     # csv出力するデータを選定
-    # dbに保存
     @csv_items = []
+
+    # 保存済みの商品データを取得
+    if params['is_all_items'] == 'on' then
+      puts "ここでdbからデータを取得し、apiリクエストを送る"
+      asins = []
+      Item.where(label_id: label_id).each do |item|
+        asins.push(item.asin)
+      end
+
+      # item_lookup APIを叩く
+      stored_items = req_lookup_api(asins)
+      stored_items.each do |stored_item|
+        @csv_items.push({
+                          'asin'     => stored_item['asin'],
+                          'jan'      => stored_item['jan'],
+                          'title'    => stored_item['title'],
+                          'price'    => stored_item['price'].to_i,
+                          'headline' => stored_item['headline'],
+                          'features' => stored_item['features']
+                        })
+      end
+    end
+
+    # 新規商品データをdbに保存
     fetched_items.each do |fetched_item|
       item = Item.new(
         :label_id => label_id,
