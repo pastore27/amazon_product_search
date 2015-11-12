@@ -39,3 +39,4 @@ gem 'unicorn'
 # gem 'debugger', group: [:development, :test]
 
 gem 'amazon-ecs'
+gem 'zipruby'
