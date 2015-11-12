@@ -4,6 +4,7 @@ require 'rails/all'
 require 'amazon/ecs'
 require 'csv'
 require 'nkf'
+require 'zipruby'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
