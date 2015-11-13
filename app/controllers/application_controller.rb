@@ -37,10 +37,15 @@ class ApplicationController < ActionController::Base
 
     ret_items = []
     res.items.each do |item|
-      item_attributes    = item.get_element('ItemAttributes')
-      item_offer_listing = item.get_element('Offers/Offer/OfferListing')
+      item_attributes = item.get_element('ItemAttributes')
+      offer_listing   = item.get_element('Offers/Offer/OfferListing')
+      main_img_url    = item.get('LargeImage/URL')
+      img_urls        = item.get_array('ImageSets/ImageSet/LargeImage/URL'),
 
-      is_prime = item_offer_listing ? item_offer_listing.get('IsEligibleForPrime') : 0
+      # img_urlsにはmain_img_urlも含まれるので消す
+      img_urls.delete(main_img_url)
+
+      is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
 
       insert_item = {
         'asin'     => item.get('ASIN'),
@@ -101,21 +106,28 @@ class ApplicationController < ActionController::Base
       end
 
       res.items.each do |item|
-        item_attributes    = item.get_element('ItemAttributes')
-        item_offer_listing = item.get_element('Offers/Offer/OfferListing')
+        item_attributes = item.get_element('ItemAttributes')
+        offer_listing   = item.get_element('Offers/Offer/OfferListing')
+        main_img_url    = item.get('LargeImage/URL')
+        img_urls        = item.get_array('ImageSets/ImageSet/LargeImage/URL'),
 
-        is_prime = item_offer_listing ? item_offer_listing.get('IsEligibleForPrime') : 0
+        # img_urlsにはmain_img_urlも含まれるので消す
+        img_urls.delete(main_img_url)
+
+        is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
 
         insert_item = {
-          'asin'     => item.get('ASIN'),
-          'jan'      => item_attributes.get('EAN'),
-          'title'    => item_attributes.get('Title'),
-          'url'      => item.get('DetailPageURL'),
-          'price'    => item_attributes.get('ListPrice/Amount'),
-          'headline' => item_attributes.get('Brand'),
-          'features' => item_attributes.get_array('Feature'),
+          'asin'         => item.get('ASIN'),
+          'jan'          => item_attributes.get('EAN'),
+          'title'        => item_attributes.get('Title'),
+          'url'          => item.get('DetailPageURL'),
+          'price'        => item_attributes.get('ListPrice/Amount'),
+          'headline'     => item_attributes.get('Brand'),
+          'features'     => item_attributes.get_array('Feature'),
           # item.get_element('Offers/Offer/OfferListing') が取得できないことがある。
-          'is_prime' => is_prime
+          'is_prime'     => is_prime
+          'main_img_url' => main_img_url,
+          'img_urls'     => img_urls
         }
 
         ret_items.push(insert_item)
@@ -148,21 +160,28 @@ class ApplicationController < ActionController::Base
     end
 
     res.items.each do |item|
-      item_attributes    = item.get_element('ItemAttributes')
-      item_offer_listing = item.get_element('Offers/Offer/OfferListing')
+      item_attributes = item.get_element('ItemAttributes')
+      offer_listing   = item.get_element('Offers/Offer/OfferListing')
+      main_img_url    = item.get('LargeImage/URL')
+      img_urls        = item.get_array('ImageSets/ImageSet/LargeImage/URL'),
 
-      is_prime = item_offer_listing ? item_offer_listing.get('IsEligibleForPrime') : 0
+      # img_urlsにはmain_img_urlも含まれるので消す
+      img_urls.delete(main_img_url)
+
+      is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
 
       insert_item = {
-        'asin'     => item.get('ASIN'),
-        'jan'      => item_attributes.get('EAN'),
-        'title'    => item_attributes.get('Title'),
-        'url'      => item.get('DetailPageURL'),
-        'price'    => item_attributes.get('ListPrice/Amount'),
-        'headline' => item_attributes.get('Brand'),
-        'features' => item_attributes.get_array('Feature'),
+        'asin'         => item.get('ASIN'),
+        'jan'          => item_attributes.get('EAN'),
+        'title'        => item_attributes.get('Title'),
+        'url'          => item.get('DetailPageURL'),
+        'price'        => item_attributes.get('ListPrice/Amount'),
+        'headline'     => item_attributes.get('Brand'),
+        'features'     => item_attributes.get_array('Feature'),
         # item.get_element('Offers/Offer/OfferListing') が取得できないことがある。
-        'is_prime' => is_prime
+        'is_prime'     => is_prime,
+        'main_img_url' => main_img_url,
+        'img_urls'     => img_urls
       }
 
       if condition['is_prime'] == 'on' then
