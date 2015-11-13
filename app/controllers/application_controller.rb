@@ -152,7 +152,7 @@ class ApplicationController < ActionController::Base
     main_img_url    = item.get('LargeImage/URL')
     img_urls        = item.get_array('ImageSets/ImageSet/LargeImage/URL'),
     # img_urlsにはmain_img_urlも含まれるので消す
-    img_urls.delete(main_img_url)
+    img_urls.delete(main_img_url) if img_urls
 
     insert_item = {
       'asin'     => item.get('ASIN'),
@@ -161,9 +161,7 @@ class ApplicationController < ActionController::Base
       'url'      => item.get('DetailPageURL'),
       'price'    => item_attributes.get('ListPrice/Amount'),
       'headline' => item_attributes.get('Brand'),
-      'features' => item_attributes.get_array('Feature'),
-      # item.get_element('Offers/Offer/OfferListing') が取得できないことがある。
-      'is_prime' => is_prime
+      'features' => item_attributes.get_array('Feature')
     }
 
     return insert_item
