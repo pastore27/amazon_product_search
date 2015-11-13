@@ -45,7 +45,7 @@ class ExportProductsController < ApplicationController
                           'headline'     => stored_item['headline'],
                           'features'     => stored_item['features'],
                           'main_img_url' => stored_item['main_img_url'],
-                          'img_urls'     => stored_item['img_urls']
+                          'sub_img_urls' => stored_item['sub_img_urls']
                         })
       end
     end
@@ -65,7 +65,7 @@ class ExportProductsController < ApplicationController
                           'headline'     => fetched_item['headline'],
                           'features'     => fetched_item['features'],
                           'main_img_url' => fetched_item['main_img_url'],
-                          'img_urls'     => fetched_item['img_urls']
+                          'sub_img_urls' => fetched_item['sub_img_urls']
                         })
       else
         next
@@ -86,6 +86,31 @@ class ExportProductsController < ApplicationController
       csv_strs.push(_create_csv_str(ele, csv_option)) if ele
     end
 
+    # img出力の前処理
+    img_data = []
+    # img_data = {
+    #   asin: csv_item['asin'],
+    #   main_img: data,
+    #   sub_img: [data, data, data,..],
+    # }
+    csv_items.each do |csv_item|
+      item_img_data = { asin: csv_item['asin'] }
+      if csv_item['main_img_url'] then
+        open(csv_item['main_img_url']) do |main_img_data|
+          item_img_data['main_img'] = main_img_data.read
+        end
+      end
+      item_img_data['sub_img'] = []
+      if csv_item['sub_img_urls'] then
+        csv_item['sub_img_urls'].each do |url|
+          open(url) do |sub_img_data|
+            item_img_data['sub_img'].push(sub_img_data.read)
+          end
+        end
+      end
+      img_data.push(item_img_data)
+    end
+
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       # csvファイルの追加
@@ -96,6 +121,20 @@ class ExportProductsController < ApplicationController
       end
       # imgディレクトリの追加
       ar.add_dir('img')
+      img_data.each do |data|
+        # main画像
+        if data['main_img'] then
+          ar.add_buffer("img/#{data[:asin]}.jpg", data['main_img'])
+        end
+        # sub画像
+        if data['sub_img'] then
+          count = 1
+          data['sub_img'].each do |ele|
+            ar.add_buffer("img/#{data[:asin]}_#{count}.jpg", ele)
+            count += 1
+          end
+        end
+      end
     end
 
     send_file(tmp_zip,

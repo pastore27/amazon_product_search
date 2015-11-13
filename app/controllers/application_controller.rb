@@ -150,18 +150,20 @@ class ApplicationController < ActionController::Base
   def _format_item(item)
     item_attributes = item.get_element('ItemAttributes')
     main_img_url    = item.get('LargeImage/URL')
-    img_urls        = item.get_array('ImageSets/ImageSet/LargeImage/URL'),
+    sub_img_urls    = item.get_array('ImageSets/ImageSet/LargeImage/URL')
     # img_urlsにはmain_img_urlも含まれるので消す
-    img_urls.delete(main_img_url) if img_urls
+    sub_img_urls.delete(main_img_url) if sub_img_urls
 
     insert_item = {
-      'asin'     => item.get('ASIN'),
-      'jan'      => item_attributes.get('EAN'),
-      'title'    => item_attributes.get('Title'),
-      'url'      => item.get('DetailPageURL'),
-      'price'    => item_attributes.get('ListPrice/Amount'),
-      'headline' => item_attributes.get('Brand'),
-      'features' => item_attributes.get_array('Feature')
+      'asin'         => item.get('ASIN'),
+      'jan'          => item_attributes.get('EAN'),
+      'title'        => item_attributes.get('Title'),
+      'url'          => item.get('DetailPageURL'),
+      'price'        => item_attributes.get('ListPrice/Amount'),
+      'headline'     => item_attributes.get('Brand'),
+      'features'     => item_attributes.get_array('Feature'),
+      'main_img_url' => main_img_url,
+      'sub_img_urls' => sub_img_urls
     }
 
     return insert_item
