@@ -79,7 +79,7 @@ class ExportProductsController < ApplicationController
     # csv出力
     csv_strs = []
     csv_items.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, csv_option)) if ele
+      csv_strs.push(_create_csv_str(ele, csv_option)) if ele
     end
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
@@ -96,7 +96,7 @@ class ExportProductsController < ApplicationController
               :filename => "#{label.name}.zip")
   end
 
-  def create_csv_str(items, csv_option)
+  def _create_csv_str(items, csv_option)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
     # テンプレートファイルを開く
     caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
