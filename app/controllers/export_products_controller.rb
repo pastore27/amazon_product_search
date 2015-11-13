@@ -38,12 +38,14 @@ class ExportProductsController < ApplicationController
       stored_items = req_lookup_api(asins)
       stored_items.each do |stored_item|
         csv_items.push({
-                          'asin'     => stored_item['asin'],
-                          'jan'      => stored_item['jan'],
-                          'title'    => stored_item['title'],
-                          'price'    => stored_item['price'].to_i,
-                          'headline' => stored_item['headline'],
-                          'features' => stored_item['features']
+                          'asin'         => stored_item['asin'],
+                          'jan'          => stored_item['jan'],
+                          'title'        => stored_item['title'],
+                          'price'        => stored_item['price'].to_i,
+                          'headline'     => stored_item['headline'],
+                          'features'     => stored_item['features'],
+                          'main_img_url' => stored_item['main_img_url'],
+                          'img_urls'     => stored_item['img_urls']
                         })
       end
     end
@@ -56,12 +58,14 @@ class ExportProductsController < ApplicationController
       )
       if item.save
         csv_items.push({
-                          'asin'     => fetched_item['asin'],
-                          'jan'      => fetched_item['jan'],
-                          'title'    => fetched_item['title'],
-                          'price'    => fetched_item['price'].to_i,
-                          'headline' => fetched_item['headline'],
-                          'features' => fetched_item['features']
+                          'asin'         => fetched_item['asin'],
+                          'jan'          => fetched_item['jan'],
+                          'title'        => fetched_item['title'],
+                          'price'        => fetched_item['price'].to_i,
+                          'headline'     => fetched_item['headline'],
+                          'features'     => fetched_item['features'],
+                          'main_img_url' => fetched_item['main_img_url'],
+                          'img_urls'     => fetched_item['img_urls']
                         })
       else
         next
@@ -84,11 +88,14 @@ class ExportProductsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
         ar.add_buffer("#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
+      # imgディレクトリの追加
+      ar.add_dir('img')
     end
 
     send_file(tmp_zip,
