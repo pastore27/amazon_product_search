@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get  "/labels/:id/delete"            => "labels#delete"
   get  "/labels/:id/search_conditions" => "labels#search_conditions"
   get  "/labels/:id/items"             => "labels#items"
+  post "/labels/:id/add_items"         => "labels#add_items"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
