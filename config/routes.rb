@@ -7,12 +7,17 @@ Rails.application.routes.draw do
   get  "/export_products"     => "export_products#show"
   post "/export_products/csv" => "export_products#download", format: "csv"
 
-  get  "/labels"            => "labels#show"
-  get  "/labels/new"        => "labels#create_form"
-  post "/labels/create"     => "labels#create"
-  get  "/labels/:id/update" => "labels#update_form"
-  post "/labels/:id/update" => "labels#update"
-  get  "/labels/:id/delete" => "labels#delete"
+  get  "/labels"                         => "labels#show"
+  get  "/labels/new"                     => "labels#create_form"
+  post "/labels/create"                  => "labels#create"
+  get  "/labels/:id/update"              => "labels#update_form"
+  post "/labels/:id/update"              => "labels#update"
+  get  "/labels/:id/delete"              => "labels#delete"
+  get  "/labels/:id/search_conditions"   => "labels#search_conditions"
+  get  "/labels/:id/items"               => "items#show"
+  post "/labels/:id/add_items"           => "items#add_items"
+  post "/labels/:id/download_items"      => "items#download_items"
+  post "/labels/:id/:page/download_imgs" => "items#download_imgs"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

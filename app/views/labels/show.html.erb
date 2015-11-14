@@ -10,6 +10,8 @@
         <th>ラベル名</th>
         <th>編集</th>
         <th>削除</th>
+        <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -21,6 +23,16 @@
         </td>
         <td>
           <a href="/labels/<%= label.id %>/delete">削除</a>
+        </td>
+        <td>
+          <a href="/labels/<%= label.id %>/search_conditions">
+            <button class="btn btn-success">検索条件をみる</button>
+          </a>
+        </td>
+        <td>
+          <a href="/labels/<%= label.id %>/items">
+            <button class="btn btn-info">商品をみる</button>
+          </a>
         </td>
       </tr>
       <% end %>

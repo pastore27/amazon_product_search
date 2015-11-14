@@ -40,3 +40,5 @@ gem 'unicorn'
 
 gem 'amazon-ecs'
 gem 'zipruby'
+gem 'kaminari'
+gem 'kaminari-bootstrap'
