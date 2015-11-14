@@ -5,6 +5,7 @@ require 'amazon/ecs'
 require 'csv'
 require 'nkf'
 require 'zipruby'
+require 'open-uri'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
