@@ -121,4 +121,63 @@ class LabelsController < ApplicationController
               :filename => "#{label.name}.zip")
   end
 
+  def download_items
+    # ラベルに紐づく検索条件を取得
+    label_id = params[:id]
+    label = Label.find(label_id)
+
+    # csv出力するデータを選定
+    csv_items = []
+
+    # 保存済みの商品データを取得
+    # ここでdbからデータを取得し、apiリクエストを送る
+    asins = []
+    Item.where(label_id: label_id).each do |item|
+      asins.push(item.asin)
+    end
+
+    # item_lookup APIを叩く
+    stored_items = req_lookup_api(asins)
+    stored_items.each do |stored_item|
+      csv_items.push({
+                        'asin'         => stored_item['asin'],
+                        'jan'          => stored_item['jan'],
+                        'title'        => stored_item['title'],
+                        'price'        => stored_item['price'].to_i,
+                        'headline'     => stored_item['headline'],
+                        'features'     => stored_item['features'],
+                        'main_img_url' => stored_item['main_img_url'],
+                        'sub_img_urls' => stored_item['sub_img_urls']
+                      })
+    end
+
+    # csv出力オプション
+    csv_option = {
+      'path'               => params['path'],
+      'explanation'        => params['explanation'],
+      'price_option_unit'  => params['price_option_unit'],
+      'price_option_value' => params['price_option_value'].to_f,
+    }
+
+    # csv出力
+    csv_strs = []
+    csv_items.each_slice(1000).to_a.each do |ele|
+      csv_strs.push(create_csv_str(ele, csv_option)) if ele
+    end
+
+    tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+    Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      # csvファイルの追加
+      count = 1
+      csv_strs.each do |csv_str|
+        ar.add_buffer("#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
+        count += 1
+      end
+    end
+
+    send_file(tmp_zip,
+              :type => 'application/zip',
+              :filename => "#{label.name}.zip")
+  end
+
 end
