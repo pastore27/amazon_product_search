@@ -23,6 +23,12 @@
 
   <%= paginate @items %>
 
+  <h3>商品画像をダウンロードする</h3>
+  <pre>上記一覧の商品画像を出力します。（このラベルのすべての商品ではなく、表示している商品のみ）</pre>
+  <%= form_tag("/labels/#{@label.id}/#{@page}/download_imgs", method: :post) do %>
+    <%= submit_tag '上記一覧の商品画像をダウンロード', :class => "btn btn-primary" %>
+  <% end %>
+
   <hr>
 
   <h3>商品一覧をCSVダウンロードする</h3>
@@ -58,7 +64,7 @@
       <input name="explanation" class="form-control">
     </div>
 
-    <%= submit_tag 'CSVダウンロード', :class => "btn btn-primary" %>
+    <%= submit_tag 'このラベルのすべての商品をCSVダウンロード', :class => "btn btn-primary" %>
   <% end %>
 
 </div>

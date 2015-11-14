@@ -1,10 +1,11 @@
 # coding: utf-8
 class ItemsController < ApplicationController
-  PER = 30
+  PER = 50
 
   def show
     @label = Label.find_by(id: params[:id])
     @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id DESC')
+    @page = params[:page] || 1
   end
 
   def add_items
@@ -132,6 +133,69 @@ class ItemsController < ApplicationController
       csv_strs.each do |csv_str|
         ar.add_buffer("#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
         count += 1
+      end
+    end
+
+    send_file(tmp_zip,
+              :type => 'application/zip',
+              :filename => "#{label.name}.zip")
+  end
+
+  def download_imgs
+    # ラベルに紐づく検索条件を取得
+    label_id = params[:id]
+    label = Label.find(label_id)
+
+    # 保存済みの商品データを取得
+    # ここでdbからデータを取得し、apiリクエストを送る
+    asins = []
+    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id DESC').each do |item|
+      asins.push(item.asin)
+    end
+
+    # item_lookup APIを叩く
+    export_items = req_lookup_api(asins)
+
+    # img出力の前処理
+    img_data = []
+    # img_data = {
+    #   asin: export_item['asin'],
+    #   main_img: data,
+    #   sub_img: [data, data, data,..],
+    # }
+    export_items.each do |export_item|
+      item_img_data = { asin: export_item['asin'] }
+      if export_item['main_img_url'] then
+        open(export_item['main_img_url']) do |main_img_data|
+          item_img_data['main_img'] = main_img_data.read
+        end
+      end
+      item_img_data['sub_img'] = []
+      if export_item['sub_img_urls'] then
+        export_item['sub_img_urls'].each do |url|
+          open(url) do |sub_img_data|
+            item_img_data['sub_img'].push(sub_img_data.read)
+          end
+        end
+      end
+      img_data.push(item_img_data)
+    end
+
+    tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+    Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      img_data.each do |data|
+        # main画像
+        if data['main_img'] then
+          ar.add_buffer("#{data[:asin]}.jpg", data['main_img'])
+        end
+        # sub画像
+        if data['sub_img'] then
+          count = 1
+          data['sub_img'].each do |ele|
+            ar.add_buffer("#{data[:asin]}_#{count}.jpg", ele)
+            count += 1
+          end
+        end
       end
     end
 
