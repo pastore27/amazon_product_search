@@ -154,14 +154,15 @@ class ApplicationController < ActionController::Base
     # img_urlsにはmain_img_urlも含まれるので消す
     sub_img_urls.delete(main_img_url) if sub_img_urls
 
+    puts item
     insert_item = {
       'asin'         => item.get('ASIN'),
-      'jan'          => item_attributes.get('EAN'),
-      'title'        => item_attributes.get('Title'),
+      'jan'          => item_attributes ? item_attributes.get('EAN') : '',
+      'title'        => item_attributes ? item_attributes.get('Title') : '',
       'url'          => item.get('DetailPageURL'),
-      'price'        => item_attributes.get('ListPrice/Amount'),
-      'headline'     => item_attributes.get('Brand'),
-      'features'     => item_attributes.get_array('Feature'),
+      'price'        => item_attributes ? item_attributes.get('ListPrice/Amount') : '',
+      'headline'     => item_attributes ? item_attributes.get('Brand') : '',
+      'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
       'main_img_url' => main_img_url,
       'sub_img_urls' => sub_img_urls
     }
