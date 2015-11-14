@@ -141,6 +141,7 @@ class ApplicationController < ActionController::Base
 
     offer_listing = item.get_element('Offers/Offer/OfferListing')
     is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
+    availability = offer_listing ? offer_listing.get('Availability') : 0
 
     insert_item = {
       'asin'         => item.get('ASIN'),
@@ -151,6 +152,7 @@ class ApplicationController < ActionController::Base
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
       'is_prime'     => is_prime,
+      'availability' => availability,
       'main_img_url' => main_img_url,
       'sub_img_urls' => sub_img_urls
     }
@@ -185,6 +187,24 @@ class ApplicationController < ActionController::Base
             csv_body['price'] = item['price'] * csv_option['price_option_value']
           end
         end
+
+        csv << csv_body.values_at(*csv_header)
+      end
+    end
+
+    return csv_str
+  end
+
+  def create_out_stock_csv_str(asins)
+    csv_header = %w/ code /
+
+    csv_str = CSV.generate do |csv|
+      # header の追加
+      csv << csv_header
+      # body の追加
+      asins.each do |asin|
+        csv_body = {}
+        csv_body['code'] = asin
 
         csv << csv_body.values_at(*csv_header)
       end

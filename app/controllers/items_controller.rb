@@ -4,7 +4,7 @@ class ItemsController < ApplicationController
 
   def show
     @label = Label.find_by(id: params[:id])
-    @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id DESC')
+    @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id ASC')
     @page = params[:page] || 1
   end
 
@@ -149,7 +149,7 @@ class ItemsController < ApplicationController
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
     asins = []
-    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id DESC').each do |item|
+    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id ASC').each do |item|
       asins.push(item.asin)
     end
 
@@ -202,6 +202,53 @@ class ItemsController < ApplicationController
     send_file(tmp_zip,
               :type => 'application/zip',
               :filename => "#{label.name}.zip")
+  end
+
+  def check_stock
+    # ラベルに紐づく検索条件を取得
+    label_id = params[:id]
+    label = Label.find(label_id)
+
+    # 保存済みの商品データを取得
+    # ここでdbからデータを取得し、apiリクエストを送る
+    asins = []
+    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id ASC').each do |item|
+      asins.push(item.asin)
+    end
+
+    # item_lookup APIを叩く
+    fetched_items = req_lookup_api(asins)
+
+    out_of_stock_asins = []
+    fetched_items.each do |fetched_item|
+      # プライムだったものが、プライムでなくなった場合、在庫切れとする
+      unless fetched_item['is_prime'] then
+        stored_item = Item.find_by(asin: fetched_item['asin'])
+        if stored_item.is_prime then
+          out_of_stock_asins.push(fetched_item['asin'])
+          next
+        end
+      end
+
+      unless ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(fetched_item['availability']) then
+        out_of_stock_asins.push(fetched_item['asin'])
+        next
+      end
+    end
+
+    tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+    Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      # csvファイルの追加
+      ar.add_buffer("#{label.name}.csv", NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_asins)))
+    end
+
+    # 在庫なし商品の削除
+    Item.delete_all(asin: out_of_stock_asins)
+
+    send_file(tmp_zip,
+              :type => 'application/zip',
+              :filename => "#{label.name}.zip")
+
   end
 
 end
