@@ -72,7 +72,9 @@ class LabelsController < ApplicationController
     fetched_items.each do |fetched_item|
       item = Item.new(
         :label_id => label_id,
-        :asin     => fetched_item['asin']
+        :asin     => fetched_item['asin'],
+        :name     => fetched_item['title'],
+        :is_prime => fetched_item['is_prime']
       )
       if item.save
         csv_items.push({
