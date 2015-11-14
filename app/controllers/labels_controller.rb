@@ -34,6 +34,11 @@ class LabelsController < ApplicationController
     label = Label.find_by(id: params[:id])
     label.destroy
 
+    # 紐付く検索条件も削除する
+    SearchCondition.delete_all(label_id: params[:id])
+    # 紐付く商品情報も削除する
+    Item.delete_all(label_id: params[:id])
+
     redirect_to :action => 'show'
   end
 
