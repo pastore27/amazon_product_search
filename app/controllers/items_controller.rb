@@ -242,6 +242,9 @@ class ItemsController < ApplicationController
       ar.add_buffer("#{label.name}.csv", NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_asins)))
     end
 
+    # 在庫なし商品の削除
+    Item.delete_all(asin: out_of_stock_asins)
+
     send_file(tmp_zip,
               :type => 'application/zip',
               :filename => "#{label.name}.zip")
