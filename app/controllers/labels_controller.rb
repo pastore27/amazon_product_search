@@ -36,4 +36,10 @@ class LabelsController < ApplicationController
     redirect_to :action => 'show'
   end
 
+  def search_conditions
+    @label = Label.find_by(id: params[:id])
+
+    @search_conditions = SearchCondition.where(label_id: params[:id])
+  end
+
 end
