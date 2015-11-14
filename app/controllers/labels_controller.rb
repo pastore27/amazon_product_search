@@ -38,8 +38,12 @@ class LabelsController < ApplicationController
 
   def search_conditions
     @label = Label.find_by(id: params[:id])
-
     @search_conditions = SearchCondition.where(label_id: params[:id])
+  end
+
+  def items
+    @label = Label.find_by(id: params[:id])
+    @items = Item.where(label_id: params[:id])
   end
 
 end
