@@ -128,10 +128,11 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      ar.add_dir('csv')
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer("#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer("csv/#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -183,16 +184,17 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      ar.add_dir('image')
       img_data.each do |data|
         # main画像
         if data['main_img'] then
-          ar.add_buffer("#{data[:asin]}.jpg", data['main_img'])
+          ar.add_buffer("image/#{data[:asin]}.jpg", data['main_img'])
         end
         # sub画像
         if data['sub_img'] then
           count = 1
           data['sub_img'].each do |ele|
-            ar.add_buffer("#{data[:asin]}_#{count}.jpg", ele)
+            ar.add_buffer("image/#{data[:asin]}_#{count}.jpg", ele)
             count += 1
           end
         end
@@ -248,7 +250,6 @@ class ItemsController < ApplicationController
     send_file(tmp_zip,
               :type => 'application/zip',
               :filename => "#{label.name}.zip")
-
   end
 
 end
