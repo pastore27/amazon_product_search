@@ -1,9 +1,10 @@
 # coding: utf-8
 class ItemsController < ApplicationController
+  PER = 30
 
   def show
     @label = Label.find_by(id: params[:id])
-    @items = Item.where(label_id: params[:id])
+    @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id DESC')
   end
 
   def add_items
