@@ -39,7 +39,7 @@ class ApplicationController < ActionController::Base
     res.items.each do |item|
       insert_item = _format_item(item)
       if condition['is_prime'] == 'on' then
-        if is_prime == '1' then
+        if insert_item['is_prime'] == '1' then
           ret_items.push(insert_item)
         end
       else
@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
     res.items.each do |item|
       insert_item = _format_item(item)
       if condition['is_prime'] == 'on' then
-        if is_prime == '1' then
+        if insert_item['is_prime'] == '1' then
           variation_items.push(insert_item)
         end
       else
@@ -181,8 +181,7 @@ class ApplicationController < ActionController::Base
 
         # 金額調整
         if (csv_option['price_option_value'])  then
-          if (csv_option['price_option_unit'] == 'yen') then
-            csv_body['price'] = item['price'] + csv_option['price_option_value']
+          if (csv_option['price_option_unit'] == 'yen') then            csv_body['price'] = item['price'] + csv_option['price_option_value']
           elsif (csv_option['price_option_unit'] == 'per') then
             csv_body['price'] = item['price'] * csv_option['price_option_value']
           end
