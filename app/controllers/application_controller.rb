@@ -35,8 +35,16 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    # プライム指定でフィルタリング
-    ret_items = _filter_by_is_prime(res.items, condition['is_prime'].to_s)
+    ret_items = []
+    res.items.each do |item|
+      insert_item = _format_item(item)
+      # プライム指定でフィルタリング
+      next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
+      # 在庫状況でフィルタリング
+      next unless _is_availability(insert_item)
+
+      ret_items.push(insert_item)
+    end
 
     # 色違いの商品の取得
     parent_asins = []
@@ -82,8 +90,6 @@ class ApplicationController < ActionController::Base
     return ret_items
   end
 
-
-
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
   def _get_variation_items(parent_asins, condition)
@@ -103,8 +109,16 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    # プライム指定でフィルタリング
-    variation_items = _filter_by_is_prime(res.items, condition['is_prime'].to_s)
+    variation_items = []
+    res.items.each do |item|
+      insert_item = _format_item(item)
+      # プライム指定でフィルタリング
+      next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
+      # 在庫状況でフィルタリング
+      next unless _is_availability(insert_item)
+
+      variation_items.push(insert_item)
+    end
 
     # parent_asinsのものは削除
     variation_items.delete_if { |item| parent_asins.include?(item['asin']) }
@@ -140,19 +154,18 @@ class ApplicationController < ActionController::Base
     return insert_item
   end
 
-  def _filter_by_is_prime(items, is_prime)
-    ret_items = []
-    items.each do |item|
-      insert_item = _format_item(item)
-      if is_prime == '1' then
-        if insert_item['is_prime'].to_s == '1' then
-          ret_items.push(insert_item)
-        end
-      else
-        ret_items.push(insert_item)
-      end
+  def _check_condition_of_is_prime(item, is_prime)
+    if is_prime == '1' then
+      return true  if item['is_prime'].to_s == '1'
+    else
+      return true
     end
-    return ret_items
+    return false
+  end
+
+  def _is_availability(item)
+    return true if ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(item['availability'])
+    return false
   end
 
   def create_csv_str(items, csv_option)
