@@ -42,6 +42,8 @@ class ApplicationController < ActionController::Base
       next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
       # 在庫状況でフィルタリング
       next unless _is_availability(insert_item)
+      # 金額が取れていなければ、取得しない
+      next if insert_item['price'].to_s == '0'
 
       ret_items.push(insert_item)
     end
@@ -116,6 +118,8 @@ class ApplicationController < ActionController::Base
       next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
       # 在庫状況でフィルタリング
       next unless _is_availability(insert_item)
+      # 金額が取れていなければ、取得しない
+      next if insert_item['price'].to_s == '0'
 
       variation_items.push(insert_item)
     end
@@ -136,13 +140,14 @@ class ApplicationController < ActionController::Base
     offer_listing = item.get_element('Offers/Offer/OfferListing')
     is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
     availability = offer_listing ? offer_listing.get('Availability') : 0
+    price = offer_listing ? offer_listing.get('Price/Amount') : 0
 
     insert_item = {
       'asin'         => item.get('ASIN'),
       'jan'          => item_attributes ? item_attributes.get('EAN') : '',
       'title'        => item_attributes ? item_attributes.get('Title') : '',
       'url'          => item.get('DetailPageURL'),
-      'price'        => item_attributes ? item_attributes.get('ListPrice/Amount') : '',
+      'price'        => price,
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
       'is_prime'     => is_prime,
