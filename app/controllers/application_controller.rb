@@ -35,17 +35,8 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    ret_items = []
-    res.items.each do |item|
-      insert_item = _format_item(item)
-      if condition['is_prime'] == 'on' then
-        if insert_item['is_prime'] == '1' then
-          ret_items.push(insert_item)
-        end
-      else
-        ret_items.push(insert_item)
-      end
-    end
+    # プライム指定でフィルタリング
+    ret_items = _filter_by_is_prime(res.items, condition['is_prime'].to_s)
 
     # 色違いの商品の取得
     parent_asins = []
@@ -59,8 +50,6 @@ class ApplicationController < ActionController::Base
 
     return ret_items
   end
-
-
 
   # asinsの配列から商品情報を取得する
   def req_lookup_api(asins)
@@ -98,7 +87,6 @@ class ApplicationController < ActionController::Base
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
   def _get_variation_items(parent_asins, condition)
-    variation_items = []
     retry_count = 0
     begin
       res = Amazon::Ecs.item_lookup(parent_asins.join(','),
@@ -115,16 +103,8 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    res.items.each do |item|
-      insert_item = _format_item(item)
-      if condition['is_prime'] == 'on' then
-        if insert_item['is_prime'] == '1' then
-          variation_items.push(insert_item)
-        end
-      else
-        variation_items.push(insert_item)
-      end
-    end
+    # プライム指定でフィルタリング
+    variation_items = _filter_by_is_prime(res.items, condition['is_prime'].to_s)
 
     # parent_asinsのものは削除
     variation_items.delete_if { |item| parent_asins.include?(item['asin']) }
@@ -158,6 +138,21 @@ class ApplicationController < ActionController::Base
     }
 
     return insert_item
+  end
+
+  def _filter_by_is_prime(items, is_prime)
+    ret_items = []
+    items.each do |item|
+      insert_item = _format_item(item)
+      if is_prime == '1' then
+        if insert_item['is_prime'].to_s == '1' then
+          ret_items.push(insert_item)
+        end
+      else
+        ret_items.push(insert_item)
+      end
+    end
+    return ret_items
   end
 
   def create_csv_str(items, csv_option)
