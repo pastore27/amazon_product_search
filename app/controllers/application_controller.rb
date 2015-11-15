@@ -176,7 +176,8 @@ class ApplicationController < ActionController::Base
 
         # 金額調整
         if (csv_option['price_option_value'])  then
-          if (csv_option['price_option_unit'] == 'yen') then            csv_body['price'] = item['price'] + csv_option['price_option_value']
+          if (csv_option['price_option_unit'] == 'yen') then
+            csv_body['price'] = item['price'] + csv_option['price_option_value']
           elsif (csv_option['price_option_unit'] == 'per') then
             csv_body['price'] = item['price'] * csv_option['price_option_value']
           end
