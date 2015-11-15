@@ -22,7 +22,7 @@
           <a href="/labels/<%= label.id %>/update">編集</a>
         </td>
         <td>
-          <a href="/labels/<%= label.id %>/delete">削除</a>
+          <a href="/labels/<%= label.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
         </td>
         <td>
           <a href="/labels/<%= label.id %>/search_conditions">
