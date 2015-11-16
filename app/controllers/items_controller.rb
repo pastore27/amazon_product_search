@@ -73,7 +73,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer("csv/#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -133,7 +133,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer("csv/#{label.name + count.to_s}.csv", NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -195,7 +195,7 @@ class ItemsController < ApplicationController
         if data['sub_img'] then
           count = 1
           data['sub_img'].each do |ele|
-            ar.add_buffer("image/#{data[:asin]}_#{count}.jpg", ele)
+            ar.add_buffer(NKF::nkf('--sjis -Lw', "image/#{data[:asin]}_#{count}.jpg"), ele)
             count += 1
           end
         end
@@ -243,7 +243,7 @@ class ItemsController < ApplicationController
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       ar.add_dir('csv')
       # csvファイルの追加
-      ar.add_buffer("csv/#{label.name}.csv", NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_asins)))
+      ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name}.csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_asins)))
     end
 
     # 在庫なし商品の削除
