@@ -4,6 +4,8 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  SECURE = 'ssgjoahbpjsfnjnvasjdfajfhsdagdagfagvbpafp'
+
   def req_search_api(condition, page)
     search_word    = ''
     keyword        = condition['keyword']
@@ -185,9 +187,12 @@ class ApplicationController < ActionController::Base
       items.each do |item|
         csv_body = {}
 
+        crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
+        code = crypt.encrypt_and_sign(item['asin'])[0,80] # 99文字以内だが、念のため80文字にする
+
         csv_body['path']        = csv_option['path'] if csv_option['path']
         csv_body['name']        = item['title'][0,75] # nameカラムは75文字以内
-        csv_body['code']        = item['asin']
+        csv_body['code']        = code
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
         csv_body['explanation'] = csv_option['explanation'] if csv_option['explanation']
