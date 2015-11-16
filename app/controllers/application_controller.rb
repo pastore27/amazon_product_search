@@ -223,7 +223,11 @@ class ApplicationController < ActionController::Base
       # body の追加
       asins.each do |asin|
         csv_body = {}
-        csv_body['code'] = asin
+
+        crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
+        code = crypt.encrypt_and_sign(asin)[0,80]
+
+        csv_body['code'] = code
 
         csv << csv_body.values_at(*csv_header)
       end
