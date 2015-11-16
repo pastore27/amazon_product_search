@@ -186,7 +186,7 @@ class ApplicationController < ActionController::Base
         csv_body = {}
 
         csv_body['path']        = csv_option['path'] if csv_option['path']
-        csv_body['name']        = item['title']
+        csv_body['name']        = item['title'][0,75] # nameカラムは75文字以内
         csv_body['code']        = item['asin']
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
