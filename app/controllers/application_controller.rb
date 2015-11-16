@@ -200,7 +200,7 @@ class ApplicationController < ActionController::Base
             csv_body['price'] = item['price'] * csv_option['price_option_value']
           end
         end
-        csv_body['price'] = '¥' + csv_body['price'].to_s
+        csv_body['price'] = csv_body['price'].to_i
 
         csv << csv_body.values_at(*csv_header)
       end
