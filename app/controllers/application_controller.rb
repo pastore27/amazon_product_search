@@ -188,7 +188,7 @@ class ApplicationController < ActionController::Base
         csv_body = {}
 
         crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
-        code = crypt.encrypt_and_sign(item['asin'])[0,80] # 99文字以内だが、念のため80文字にする
+        code = crypt.encrypt_and_sign(item['asin'])[0,10] # 先頭の10文字を利用する
 
         csv_body['path']        = csv_option['path'] if csv_option['path']
         csv_body['name']        = item['title'][0,75] # nameカラムは75文字以内
@@ -225,7 +225,7 @@ class ApplicationController < ActionController::Base
         csv_body = {}
 
         crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
-        code = crypt.encrypt_and_sign(asin)[0,80]
+        code = crypt.encrypt_and_sign(asin)[0,10]
 
         csv_body['code'] = code
 
