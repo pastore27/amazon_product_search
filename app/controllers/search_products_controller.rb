@@ -1,6 +1,9 @@
 # coding: utf-8
 class SearchProductsController < ApplicationController
 
+  # ユーザがログインしていないとにアクセスできないように
+  before_action :authenticate_user!, only: :show
+
   def show
     @search_conditions = SearchCondition.all
   end
