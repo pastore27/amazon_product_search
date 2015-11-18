@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  root to: "labels#show"
+
   get  "/search_products"          => "search_products#show"
   post "/search_products/products" => "search_products#get_products"
   post "/search_products/create"   => "search_products#create_search_condition"
