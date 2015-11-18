@@ -64,7 +64,8 @@ class ApplicationController < ActionController::Base
   end
 
   # asinsの配列から商品情報を取得する
-  def req_lookup_api(asins)
+  # codeを生成するために、label_idを渡してもらう必要がある
+  def req_lookup_api(asins, label_id)
     ret_items = []
 
     # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
@@ -87,6 +88,8 @@ class ApplicationController < ActionController::Base
 
       res.items.each do |item|
         insert_item = _format_item(item)
+        # codeを生成する
+        insert_item['code'] = generate_code(insert_item['asin'], label_id)
         ret_items.push(insert_item)
       end
     end
@@ -187,12 +190,9 @@ class ApplicationController < ActionController::Base
       items.each do |item|
         csv_body = {}
 
-        crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
-        code = crypt.encrypt_and_sign(item['asin'])[0,10] # 先頭の10文字を利用する
-
         csv_body['path']        = csv_option['path'] if csv_option['path']
         csv_body['name']        = item['title'][0,75] # nameカラムは75文字以内
-        csv_body['code']        = code
+        csv_body['code']        = item['code']
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
         csv_body['explanation'] = csv_option['explanation'] if csv_option['explanation']
@@ -234,6 +234,12 @@ class ApplicationController < ActionController::Base
     end
 
     return csv_str
+  end
+
+  def generate_code(asin, label_id)
+    crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
+    code = label_id.to_s + crypt.encrypt_and_sign(asin)[0,10] # code = label_id + 暗号文字列先頭の10文字
+    return code
   end
 
 end

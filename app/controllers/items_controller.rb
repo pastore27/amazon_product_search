@@ -31,23 +31,27 @@ class ItemsController < ApplicationController
 
     # 新規商品データをdbに保存
     fetched_items.each do |fetched_item|
+      asin = fetched_item['asin']
+      code = generate_code(asin, label_id)
       item = Item.new(
         :label_id => label_id,
-        :asin     => fetched_item['asin'],
+        :asin     => asin,
+        :code     => code,
         :name     => fetched_item['title'],
         :is_prime => fetched_item['is_prime']
       )
       if item.save
         csv_items.push({
-                          'asin'         => fetched_item['asin'],
-                          'jan'          => fetched_item['jan'],
-                          'title'        => fetched_item['title'],
-                          'price'        => fetched_item['price'].to_i,
-                          'headline'     => fetched_item['headline'],
-                          'features'     => fetched_item['features'],
-                          'main_img_url' => fetched_item['main_img_url'],
-                          'sub_img_urls' => fetched_item['sub_img_urls']
-                        })
+                         'asin'         => asin,
+                         'code'         => code,
+                         'jan'          => fetched_item['jan'],
+                         'title'        => fetched_item['title'],
+                         'price'        => fetched_item['price'].to_i,
+                         'headline'     => fetched_item['headline'],
+                         'features'     => fetched_item['features'],
+                         'main_img_url' => fetched_item['main_img_url'],
+                         'sub_img_urls' => fetched_item['sub_img_urls']
+                       })
       else
         next
       end
@@ -99,18 +103,19 @@ class ItemsController < ApplicationController
     end
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api(asins)
+    stored_items = req_lookup_api(asins, label_id) # codeを生成するために、label_idを渡す必要がある
     stored_items.each do |stored_item|
       csv_items.push({
-                        'asin'         => stored_item['asin'],
-                        'jan'          => stored_item['jan'],
-                        'title'        => stored_item['title'],
-                        'price'        => stored_item['price'].to_i,
-                        'headline'     => stored_item['headline'],
-                        'features'     => stored_item['features'],
-                        'main_img_url' => stored_item['main_img_url'],
-                        'sub_img_urls' => stored_item['sub_img_urls']
-                      })
+                       'asin'         => stored_item['asin'],
+                       'code'         => stored_item['code'],
+                       'jan'          => stored_item['jan'],
+                       'title'        => stored_item['title'],
+                       'price'        => stored_item['price'].to_i,
+                       'headline'     => stored_item['headline'],
+                       'features'     => stored_item['features'],
+                       'main_img_url' => stored_item['main_img_url'],
+                       'sub_img_urls' => stored_item['sub_img_urls']
+                     })
     end
 
     # csv出力オプション
@@ -156,7 +161,7 @@ class ItemsController < ApplicationController
     end
 
     # item_lookup APIを叩く
-    export_items = req_lookup_api(asins)
+    export_items = req_lookup_api(asins, label_id) # codeを生成するために、label_idを渡す必要がある
 
     # img出力の前処理
     img_data = []
@@ -166,7 +171,7 @@ class ItemsController < ApplicationController
     #   sub_img: [data, data, data,..],
     # }
     export_items.each do |export_item|
-      item_img_data = { asin: export_item['asin'] }
+      item_img_data = { code: export_item['code'] }
       if export_item['main_img_url'] then
         open(export_item['main_img_url']) do |main_img_data|
           item_img_data['main_img'] = main_img_data.read
@@ -220,7 +225,7 @@ class ItemsController < ApplicationController
     end
 
     # item_lookup APIを叩く
-    fetched_items = req_lookup_api(asins)
+    fetched_items = req_lookup_api(asins, label_id)
 
     out_of_stock_asins = []
     fetched_items.each do |fetched_item|

@@ -29,6 +29,7 @@ class SearchProductsController < ApplicationController
   end
 
   def create_search_condition
+    puts params
     search_condition = SearchCondition.new(
       :label_id       => params['label_id'],
       :keyword        => params['keyword'],
