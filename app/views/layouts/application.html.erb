@@ -16,6 +16,19 @@
         <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
         <li <% if controller.controller_name == "labels" || controller.controller_name == "items" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
       </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <!-- user_signed_in? はユーザがログインしているか調べるdeviseのHelperメソッド -->
+        <% if user_signed_in? %>
+        <!-- current_user は現在ログインしているUserオブジェクトを返すdeviseのHelperメソッド -->
+        <!-- *_path はUserモデルを作成したときに、deviseにより自動で作成されてますので、rake routesで確認できます -->
+        <li>Logged in as <strong><%= current_user.email %></strong>.</li>
+        <li><%= link_to 'プロフィール変更', edit_user_registration_path %></li>
+        <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
+        <% else %>
+        <li><%= link_to "サインイン", new_user_registration_path %></li>
+        <li><%= link_to "ログイン", new_user_session_path %></li>
+        <% end %>
+      </ul>
     </div>
   </nav>
 
