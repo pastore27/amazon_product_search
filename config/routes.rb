@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  devise_for :users
   root to: "labels#show"
 
   get  "/search_products"          => "search_products#show"
