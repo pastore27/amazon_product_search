@@ -32,7 +32,7 @@ class LabelsController < ApplicationController
 
   def delete
     label = Label.find_by(id: params[:id])
-    label.destroy
+    label.destroy if label.present?
 
     # 紐付く検索条件も削除する
     SearchCondition.delete_all(label_id: params[:id])
@@ -49,7 +49,7 @@ class LabelsController < ApplicationController
 
   def delete_search_condition
     search_condition = SearchCondition.find_by(id: params[:search_condition_id])
-    search_condition.destroy
+    search_condition.destroy if search_condition.present
 
     redirect_to :action => 'search_conditions', :id => params[:id]
   end
