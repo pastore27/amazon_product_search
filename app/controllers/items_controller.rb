@@ -73,18 +73,18 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir('csv')
+      ar.add_dir(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
 
     send_file(tmp_zip,
               :type => 'application/zip',
-              :filename => "#{label.name}.zip")
+              :filename => NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name}).zip"))
   end
 
   def download_items
@@ -134,18 +134,18 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir('csv')
+      ar.add_dir(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
 
     send_file(tmp_zip,
               :type => 'application/zip',
-              :filename => "#{label.name}.zip")
+              :filename => NKF::nkf('--sjis -Lw', "商品一覧(#{label.name}).zip"))
   end
 
   def download_imgs
@@ -190,17 +190,17 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir('image')
+      ar.add_dir(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})"))
       img_data.each do |data|
         # main画像
         if data['main_img'] then
-          ar.add_buffer("image/#{data[:asin]}.jpg", data['main_img'])
+          ar.add_buffer("商品画像(#{label.name})/#{data[:code]}.jpg", data['main_img'])
         end
         # sub画像
         if data['sub_img'] then
           count = 1
           data['sub_img'].each do |ele|
-            ar.add_buffer(NKF::nkf('--sjis -Lw', "image/#{data[:asin]}_#{count}.jpg"), ele)
+            ar.add_buffer(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})/#{data[:code]}_#{count}.jpg"), ele)
             count += 1
           end
         end
@@ -209,7 +209,7 @@ class ItemsController < ApplicationController
 
     send_file(tmp_zip,
               :type => 'application/zip',
-              :filename => "#{label.name}.zip")
+              :filename => NKF::nkf('--sjis -Lw', "商品画像(#{label.name}).zip"))
   end
 
   def check_stock
@@ -227,36 +227,35 @@ class ItemsController < ApplicationController
     # item_lookup APIを叩く
     fetched_items = req_lookup_api(asins, label_id)
 
-    out_of_stock_asins = []
+    out_of_stock_codes = []
     fetched_items.each do |fetched_item|
       # プライムだったものが、プライムでなくなった場合、在庫切れとする
       unless fetched_item['is_prime'] then
         stored_item = Item.find_by(asin: fetched_item['asin'])
         if stored_item.is_prime then
-          out_of_stock_asins.push(fetched_item['asin'])
+          out_of_stock_codes.push(fetched_item['code'])
           next
         end
       end
 
       unless ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(fetched_item['availability']) then
-        out_of_stock_asins.push(fetched_item['asin'])
+        out_of_stock_codes.push(fetched_item['code'])
         next
       end
     end
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir('csv')
       # csvファイルの追加
-      ar.add_buffer(NKF::nkf('--sjis -Lw', "csv/#{label.name}.csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_asins)))
+      ar.add_buffer(NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes)))
     end
 
     # 在庫なし商品の削除
-    Item.delete_all(asin: out_of_stock_asins)
+    Item.delete_all(code: out_of_stock_codes)
 
     send_file(tmp_zip,
               :type => 'application/zip',
-              :filename => "#{label.name}.zip")
+              :filename => NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).zip"))
   end
 
 end
