@@ -49,7 +49,7 @@ class LabelsController < ApplicationController
 
   def delete_search_condition
     search_condition = SearchCondition.find_by(id: params[:search_condition_id])
-    search_condition.destroy if search_condition.present
+    search_condition.destroy if search_condition.present?
 
     redirect_to :action => 'search_conditions', :id => params[:id]
   end

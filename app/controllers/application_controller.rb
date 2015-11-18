@@ -4,8 +4,6 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
-  SECURE = 'ssgjoahbpjsfnjnvasjdfajfhsdagdagfagvbpafp'
-
   def req_search_api(condition, page)
     search_word    = ''
     keyword        = condition['keyword']
@@ -234,8 +232,7 @@ class ApplicationController < ActionController::Base
   end
 
   def generate_code(asin, label_id)
-    crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
-    code = label_id.to_s + crypt.encrypt_and_sign(asin)[0,10] # code = label_id + 暗号文字列先頭の10文字
+    code = label_id.to_s + Digest::MD5.hexdigest(asin[0,5])[0,5] + Digest::MD5.hexdigest(asin[5,5])[0,5] # code = label_id + 暗号文字列先頭の10文字
     return code
   end
 
