@@ -214,18 +214,15 @@ class ApplicationController < ActionController::Base
     return csv_str
   end
 
-  def create_out_stock_csv_str(asins)
+  def create_out_stock_csv_str(codes)
     csv_header = %w/ code /
 
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
       # body の追加
-      asins.each do |asin|
+      codes.each do |code|
         csv_body = {}
-
-        crypt = ActiveSupport::MessageEncryptor.new(SECURE, cipher: 'aes-256-cbc')
-        code = crypt.encrypt_and_sign(asin)[0,10]
 
         csv_body['code'] = code
 
