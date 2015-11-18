@@ -1,9 +1,7 @@
-<div class="container">
-  <%= form_tag('/labels/create', method: :post) do %>
-    <div class="form-group">
-      <label>ラベル名</label>
-      <input name="name" class="form-control">
-    </div>
-    <%= submit_tag '作成', :class => "btn btn-primary" %>
-  <% end %>
-</div>
+<%= form_tag('/labels/create', method: :post) do %>
+  <div class="form-group">
+    <label>ラベル名</label>
+    <input name="name" class="form-control">
+  </div>
+  <%= submit_tag '作成', :class => "btn btn-primary" %>
+<% end %>
