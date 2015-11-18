@@ -1,3 +1,4 @@
+# coding: utf-8
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -33,5 +34,7 @@ module AmazonProductSearch
     # for debug
     # Amazon::Ecs.debug = true
 
+    # deviseの言語設定
+    config.i18n.default_locale = :ja
   end
 end

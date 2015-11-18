@@ -2,6 +2,9 @@
 class ItemsController < ApplicationController
   PER = 50
 
+  # ユーザがログインしていないとにアクセスできないように
+  before_action :authenticate_user!, only: :show
+
   def show
     @label = Label.find_by(id: params[:id])
     @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id ASC')

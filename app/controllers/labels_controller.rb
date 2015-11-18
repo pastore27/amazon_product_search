@@ -1,6 +1,9 @@
 # coding: utf-8
 class LabelsController < ApplicationController
 
+  # ユーザがログインしていないとにアクセスできないように
+  before_action :authenticate_user!, only: :show
+
   def show
     @labels = Label.all
   end
