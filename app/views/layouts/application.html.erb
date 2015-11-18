@@ -21,8 +21,8 @@
         <% if user_signed_in? %>
         <!-- current_user は現在ログインしているUserオブジェクトを返すdeviseのHelperメソッド -->
         <!-- *_path はUserモデルを作成したときに、deviseにより自動で作成されてますので、rake routesで確認できます -->
-        <li>Logged in as <strong><%= current_user.email %></strong>.</li>
-        <li><%= link_to 'ユーザ情報変更', edit_user_registration_path %></li>
+        <li><a href="#"><%= current_user.email %></a></li>
+        <li><%= link_to 'プロフィール変更', edit_user_registration_path %></li>
         <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
         <% else %>
         <li><%= link_to "ログイン", new_user_session_path %></li>
@@ -31,10 +31,9 @@
     </div>
   </nav>
 
-  <p class="notice"><%= notice %></p>
-  <p class="alert"><%= alert %></p>
-
   <div class="container">
+    <p class="notice"><%= notice %></p>
+    <p class="alert"><%= alert %></p>
     <%= yield %>
   </div>
 
