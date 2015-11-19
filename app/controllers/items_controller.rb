@@ -197,7 +197,7 @@ class ItemsController < ApplicationController
       img_data.each do |data|
         # main画像
         if data['main_img'] then
-          ar.add_buffer("商品画像(#{label.name})/#{data[:code]}.jpg", data['main_img'])
+          ar.add_buffer(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})/#{data[:code]}.jpg"), data['main_img'])
         end
         # sub画像
         if data['sub_img'] then
