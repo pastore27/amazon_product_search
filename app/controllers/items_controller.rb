@@ -81,7 +81,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -141,7 +141,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
