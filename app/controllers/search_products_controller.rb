@@ -4,7 +4,7 @@ class SearchProductsController < ApplicationController
   # ユーザがログインしていないとにアクセスできないように
   before_action :authenticate_user!
 
-  def show
+  def index
     @search_conditions = SearchCondition.all
   end
 
@@ -42,7 +42,7 @@ class SearchProductsController < ApplicationController
     )
     search_condition.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
 end

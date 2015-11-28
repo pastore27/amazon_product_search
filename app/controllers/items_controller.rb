@@ -6,7 +6,7 @@ class ItemsController < ApplicationController
   before_action :authenticate_user!
   before_action :correct_user
 
-  def show
+  def index
     @label = Label.find_by(id: params[:id])
     @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id ASC')
     @page = params[:page] || 1

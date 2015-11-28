@@ -5,7 +5,7 @@ class LabelsController < ApplicationController
   before_action :authenticate_user!
   before_action :correct_user
 
-  def show
+  def index
     @labels = Label.where(user_id: current_user.id)
   end
 
@@ -20,7 +20,7 @@ class LabelsController < ApplicationController
     )
     label.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def update_form
@@ -32,7 +32,7 @@ class LabelsController < ApplicationController
     label.name = params['name']
     label.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def delete
@@ -44,7 +44,7 @@ class LabelsController < ApplicationController
     # 紐付く商品情報も削除する
     Item.delete_all(label_id: params[:id])
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def search_conditions

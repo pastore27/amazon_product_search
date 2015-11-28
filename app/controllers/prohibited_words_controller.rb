@@ -5,7 +5,7 @@ class ProhibitedWordsController < ApplicationController
   before_action :authenticate_user!
   before_action :admin_user
 
-  def show
+  def index
     @prohibited_words = ProhibitedWord.all
   end
 
@@ -19,14 +19,14 @@ class ProhibitedWordsController < ApplicationController
     )
     prohibited_word.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def delete
     prohibited_word = ProhibitedWord.find_by(id: params[:id])
     prohibited_word.destroy if prohibited_word.present?
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
 end
