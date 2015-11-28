@@ -246,4 +246,9 @@ class ApplicationController < ActionController::Base
       redirect_to(root_path) unless current_user.id.to_s == params[:user_id].to_s
     end
   end
+
+  # adminの認証
+  def admin_user
+    redirect_to(root_path) unless current_user.id.to_s == '1'
+  end
 end

@@ -3,6 +3,7 @@ class ProhibitedWordsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
   before_action :authenticate_user!
+  before_action :admin_user
 
   def show
     @prohibited_words = ProhibitedWord.all
