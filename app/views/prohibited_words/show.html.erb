@@ -1,0 +1,24 @@
+<h3>禁止ワード一覧</h3>
+
+<a href="/prohibited_words/new">
+  <button class="btn btn-primary">新規追加</button>
+</a>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>禁止ワード</th>
+      <th>削除</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @prohibited_words.each do |prohibited_word| %>
+    <tr>
+      <td><%= prohibited_word.name %></td>
+      <td>
+        <a href="/prohibited_words/<%= prohibited_word.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
