@@ -2,7 +2,8 @@
 class LabelsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
+  before_action :correct_user
 
   def show
     @labels = Label.where(user_id: current_user.id)
@@ -57,4 +58,5 @@ class LabelsController < ApplicationController
 
     redirect_to :action => 'search_conditions', :id => params[:id]
   end
+
 end

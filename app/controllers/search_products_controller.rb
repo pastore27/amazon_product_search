@@ -2,7 +2,7 @@
 class SearchProductsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
 
   def show
     @search_conditions = SearchCondition.all

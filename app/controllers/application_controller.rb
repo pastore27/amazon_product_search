@@ -240,4 +240,10 @@ class ApplicationController < ActionController::Base
     return code
   end
 
+  # user_idの認証
+  def correct_user
+    if params[:user_id]
+      redirect_to(root_path) unless current_user.id.to_s == params[:user_id].to_s
+    end
+  end
 end

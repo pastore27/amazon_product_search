@@ -3,7 +3,8 @@ class ItemsController < ApplicationController
   PER = 50
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
+  before_action :correct_user
 
   def show
     @label = Label.find_by(id: params[:id])
