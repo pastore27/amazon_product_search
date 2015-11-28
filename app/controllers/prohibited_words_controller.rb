@@ -1,0 +1,2 @@
+class ProhibitedWordsController < ApplicationController
+end
