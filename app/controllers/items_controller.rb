@@ -14,7 +14,7 @@ class ItemsController < ApplicationController
   def add_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
     search_conditions = SearchCondition.where(label_id: label_id)
 
     # Amazon APIよりデータを取得
@@ -93,7 +93,7 @@ class ItemsController < ApplicationController
   def download_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # csv出力するデータを選定
     csv_items = []
@@ -154,7 +154,7 @@ class ItemsController < ApplicationController
   def download_imgs
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
@@ -217,7 +217,7 @@ class ItemsController < ApplicationController
   def check_stock
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る

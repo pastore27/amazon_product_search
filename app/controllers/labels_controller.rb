@@ -5,7 +5,7 @@ class LabelsController < ApplicationController
   before_action :authenticate_user!, only: :show
 
   def show
-    @labels = Label.all
+    @labels = Label.where(user_id: current_user.id)
   end
 
   def create_form
@@ -23,11 +23,11 @@ class LabelsController < ApplicationController
   end
 
   def update_form
-    @label = Label.find_by(id: params[:id])
+    @label = Label.find_by(id: params[:id], user_id: current_user.id)
   end
 
   def update
-    label = Label.find_by(id: params[:id])
+    label = Label.find_by(id: params[:id], user_id: current_user.id)
     label.name = params['name']
     label.save
 
@@ -35,7 +35,7 @@ class LabelsController < ApplicationController
   end
 
   def delete
-    label = Label.find_by(id: params[:id])
+    label = Label.find_by(id: params[:id], user_id: current_user.id)
     label.destroy if label.present?
 
     # 紐付く検索条件も削除する
@@ -47,7 +47,7 @@ class LabelsController < ApplicationController
   end
 
   def search_conditions
-    @label = Label.find_by(id: params[:id])
+    @label = Label.find_by(id: params[:id], user_id: current_user.id)
     @search_conditions = SearchCondition.where(label_id: params[:id])
   end
 

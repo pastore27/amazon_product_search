@@ -28,7 +28,7 @@ class SearchProductsController < ApplicationController
     end
 
     @search_info['item_total'] = @items.length
-    @labels = Label.all
+    @labels = Label.where(user_id: current_user.id)
   end
 
   def create_search_condition
