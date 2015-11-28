@@ -38,6 +38,7 @@ class ItemsController < ApplicationController
       asin = fetched_item['asin']
       code = generate_code(asin, label_id)
       item = Item.new(
+        :user_id  => current_user.id,
         :label_id => label_id,
         :asin     => asin,
         :code     => code,
