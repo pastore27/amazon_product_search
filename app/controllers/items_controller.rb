@@ -193,17 +193,16 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})"))
       img_data.each do |data|
         # main画像
         if data['main_img'] then
-          ar.add_buffer(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})/#{data[:code]}.jpg"), data['main_img'])
+          ar.add_buffer(NKF::nkf('--sjis -Lw', "#{data[:code]}.jpg"), data['main_img'])
         end
         # sub画像
         if data['sub_img'] then
           count = 1
           data['sub_img'].each do |ele|
-            ar.add_buffer(NKF::nkf('--sjis -Lw', "商品画像(#{label.name})/#{data[:code]}_#{count}.jpg"), ele)
+            ar.add_buffer(NKF::nkf('--sjis -Lw', "#{data[:code]}_#{count}.jpg"), ele)
             count += 1
           end
         end
