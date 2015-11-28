@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
 
+  root to: "labels#show"
+
   devise_for :users, :controllers => {
                :registrations => 'users/registrations'
              }
-  root to: "labels#show"
+  resources :users, :only => [:index]
 
   get  "/search_products"          => "search_products#show"
   post "/search_products/products" => "search_products#get_products"

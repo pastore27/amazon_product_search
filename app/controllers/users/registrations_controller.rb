@@ -1,17 +1,18 @@
 class Users::RegistrationsController < Devise::RegistrationsController
-  prepend_before_filter :require_no_authentication, :only => [ :cancel]
-  prepend_before_filter :authenticate_scope!, :only => [:new, :create ,:edit, :update, :destroy]
 
-  def new
-    if current_user.id.to_s == '1' then
-      super
-    else
-      redirect_to '/labels'
-    end
+  prepend_before_filter :require_no_authentication, :only => [:cancel]
+  prepend_before_filter :authenticate_scope!, :only => [:new, :create ,:edit, :update, :destroy]
+  before_action :admin_user, :only => [:new]
+
+  def index
+    super
   end
 
-  def create
-    super
+  def destroy
+    user = User.find_by(id: params[:id])
+    user.destroy if user.present?
+
+    redirect_to :back
   end
 
 end

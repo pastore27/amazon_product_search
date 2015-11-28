@@ -14,11 +14,11 @@
       </div>
       <ul class="nav navbar-nav">
         <% if user_signed_in? %>
-          <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
-          <li <% if controller.controller_name == "labels" || controller.controller_name == "items" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
-          <% if current_user.id.to_s == '1' %>
-          <li <% if controller.controller_name == "prohibited_words" %>class="active"<% end %>><a href="/prohibited_words">禁止ワード管理</a></li>
-          <% end %>
+        <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
+        <li <% if controller.controller_name == "labels" || controller.controller_name == "items" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
+        <% if current_user.id.to_s == '1' %>
+        <li <% if controller.controller_name == "prohibited_words" %>class="active"<% end %>><a href="/prohibited_words">禁止ワード管理</a></li>
+        <% end %>
         <% end %>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -27,6 +27,9 @@
         <!-- current_user は現在ログインしているUserオブジェクトを返すdeviseのHelperメソッド -->
         <!-- *_path はUserモデルを作成したときに、deviseにより自動で作成されてますので、rake routesで確認できます -->
         <li><a href="#"><%= current_user.email %></a></li>
+        <% if current_user.id.to_s == '1' %>
+        <li <% if controller.controller_name == "users" || controller.controller_name == "registrations" %>class="active"<% end %>><a href="/users">ユーザ管理</a></li>
+        <% end %>
         <li><%= link_to 'プロフィール変更', edit_user_registration_path %></li>
         <li><%= link_to "ログアウト", destroy_user_session_path, method: :delete %></li>
         <% else %>
