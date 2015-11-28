@@ -144,12 +144,11 @@ class ApplicationController < ActionController::Base
     is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
     availability = offer_listing ? offer_listing.get('Availability') : 0
     price = offer_listing ? offer_listing.get('Price/Amount') : 0
-    title = item_attributes.get('Title')
 
     insert_item = {
       'asin'         => item.get('ASIN'),
       'jan'          => item_attributes ? item_attributes.get('EAN') : '',
-      'title'        => item_attributes ? title.byteslice(0,150).scrub('') : '',
+      'title'        => item_attributes ? item_attributes.get('Title') : '',
       'url'          => item.get('DetailPageURL'),
       'price'        => price,
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
@@ -190,7 +189,7 @@ class ApplicationController < ActionController::Base
         csv_body = {}
 
         csv_body['path']        = csv_option['path'] if csv_option['path']
-        csv_body['name']        = item['title']
+        csv_body['name']        = item['title'].byteslice(0,150).scrub('') # nameカラムは半角150文字以内
         csv_body['code']        = item['code']
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
