@@ -38,13 +38,7 @@ class ApplicationController < ActionController::Base
     ret_items = []
     res.items.each do |item|
       insert_item = _format_item(item)
-      # プライム指定でフィルタリング
-      next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
-      # 在庫状況でフィルタリング
-      next unless _is_availability(insert_item)
-      # 金額が取れていなければ、取得しない
-      next if insert_item['price'].to_s == '0'
-
+      next unless _validate_item(insert_item, condition)
       ret_items.push(insert_item)
     end
 
@@ -117,13 +111,7 @@ class ApplicationController < ActionController::Base
     variation_items = []
     res.items.each do |item|
       insert_item = _format_item(item)
-      # プライム指定でフィルタリング
-      next unless _check_condition_of_is_prime(insert_item, condition['is_prime'].to_s)
-      # 在庫状況でフィルタリング
-      next unless _is_availability(insert_item)
-      # 金額が取れていなければ、取得しない
-      next if insert_item['price'].to_s == '0'
-
+      next unless _validate_item(insert_item, condition)
       variation_items.push(insert_item)
     end
 
@@ -131,6 +119,22 @@ class ApplicationController < ActionController::Base
     variation_items.delete_if { |item| parent_asins.include?(item['asin']) }
 
     return variation_items
+  end
+
+  def _validate_item(item, condition)
+    # プライム指定でフィルタリング
+    return false unless _check_condition_of_is_prime(item, condition['is_prime'].to_s)
+    # 在庫状況でフィルタリング
+    return false unless _is_availability(item)
+    # 金額が取れていなければ、取得しない
+    return false if item['price'].to_s == '0'
+    # 禁止ワードがあれば、取得しない
+    prohibited_words = ProhibitedWord.all
+    prohibited_words.each do |prohibited_word|
+      return false if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
+    end
+
+    return true
   end
 
   def _format_item(item)
