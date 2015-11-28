@@ -14,7 +14,8 @@ class LabelsController < ApplicationController
 
   def create
     label = Label.new(
-      :name => params['name']
+      :user_id => current_user.id,
+      :name    => params['name']
     )
     label.save
 
