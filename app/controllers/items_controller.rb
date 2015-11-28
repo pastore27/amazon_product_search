@@ -76,11 +76,10 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -137,11 +136,10 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
