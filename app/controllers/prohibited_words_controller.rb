@@ -5,7 +5,7 @@ class ProhibitedWordsController < ApplicationController
   before_action :authenticate_user!, only: :show
 
   def show
-
+    @prohibited_words = ProhibitedWord.all
   end
 
 end
