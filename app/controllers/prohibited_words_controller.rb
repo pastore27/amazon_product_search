@@ -3,10 +3,9 @@ class ProhibitedWordsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
   before_action :authenticate_user!
-  before_action :admin_user
 
   def index
-    @prohibited_words = ProhibitedWord.all
+    @prohibited_words = ProhibitedWord.where(user_id: current_user.id)
   end
 
   def create_form
@@ -15,7 +14,8 @@ class ProhibitedWordsController < ApplicationController
 
   def create
     prohibited_word = ProhibitedWord.new(
-      :name => params['name']
+      :user_id => current_user.id,
+      :name    => params['name']
     )
     prohibited_word.save
 
@@ -23,7 +23,7 @@ class ProhibitedWordsController < ApplicationController
   end
 
   def delete
-    prohibited_word = ProhibitedWord.find_by(id: params[:id])
+    prohibited_word = ProhibitedWord.find_by(id: params[:id], user_id: current_user.id)
     prohibited_word.destroy if prohibited_word.present?
 
     redirect_to :action => 'index'
