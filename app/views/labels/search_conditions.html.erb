@@ -18,7 +18,7 @@
       <td><%= search_condition.category %></td>
       <td><% if search_condition.is_prime == 1 %>あり<% end %></td>
       <td>
-        <a href="/labels/<%= current_user.id %>/<%= @label.id %>/search_condition/<%= search_condition.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
+        <a href="/labels/<%= current_user.id %>/<%= @label.id %>/search_conditions/<%= search_condition.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
       </td>
     </tr>
     <% end %>

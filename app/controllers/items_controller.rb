@@ -7,14 +7,14 @@ class ItemsController < ApplicationController
   before_action :correct_user
 
   def index
-    @label = Label.find_by(id: params[:id])
-    @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id ASC')
-    @page = params[:page] || 1
+    @label = Label.find_by(id: params[:label_id])
+    @items = Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC')
+    @page  = params[:page] || 1
   end
 
   def add_items
     # ラベルに紐づく検索条件を取得
-    label_id = params[:id]
+    label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
     search_conditions = SearchCondition.where(label_id: label_id)
 
@@ -38,12 +38,12 @@ class ItemsController < ApplicationController
       asin = fetched_item['asin']
       code = generate_code(asin, label_id)
       item = Item.new(
-        :user_id  => current_user.id,
-        :label_id => label_id,
-        :asin     => asin,
-        :code     => code,
-        :name     => fetched_item['title'],
-        :is_prime => fetched_item['is_prime']
+        :user_id              => current_user.id,
+        :search_condition_id => fetched_item['search_condition_id'],
+        :asin                 => asin,
+        :code                 => code,
+        :name                 => fetched_item['title'],
+        :is_prime             => fetched_item['is_prime']
       )
       if item.save
         csv_items.push({
@@ -93,7 +93,7 @@ class ItemsController < ApplicationController
 
   def download_items
     # ラベルに紐づく検索条件を取得
-    label_id = params[:id]
+    label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # csv出力するデータを選定
@@ -102,7 +102,7 @@ class ItemsController < ApplicationController
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
     asins = []
-    Item.where(label_id: label_id).each do |item|
+    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).each do |item|
       asins.push(item.asin)
     end
 
@@ -153,13 +153,13 @@ class ItemsController < ApplicationController
 
   def download_imgs
     # ラベルに紐づく検索条件を取得
-    label_id = params[:id]
+    label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
     asins = []
-    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id ASC').each do |item|
+    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC').each do |item|
       asins.push(item.asin)
     end
 
@@ -216,13 +216,13 @@ class ItemsController < ApplicationController
 
   def check_stock
     # ラベルに紐づく検索条件を取得
-    label_id = params[:id]
+    label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
     asins = []
-    Item.where(label_id: label_id).page(params[:page]).per(PER).order('id ASC').each do |item|
+    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC').each do |item|
       asins.push(item.asin)
     end
 
@@ -261,7 +261,7 @@ class ItemsController < ApplicationController
   end
 
   def delete
-    item = Item.find_by(id: params[:item_id], label_id: params[:id], user_id: current_user.id)
+    item = Item.find_by(id: params[:item_id], user_id: current_user.id)
     item.destroy if item.present?
 
     redirect_to :action => 'index'

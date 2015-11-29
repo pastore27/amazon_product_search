@@ -11,12 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151129032503) do
+ActiveRecord::Schema.define(version: 20151129070910) do
 
   create_table "items", force: true do |t|
-    t.integer  "user_id",    null: false
-    t.integer  "label_id",   null: false
-    t.string   "asin",       null: false
+    t.integer  "user_id",             null: false
+    t.integer  "search_condition_id", null: false
+    t.string   "asin",                null: false
     t.string   "code"
     t.string   "name"
     t.integer  "is_prime"
@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20151129032503) do
     t.datetime "updated_at"
   end
 
+  add_index "items", ["search_condition_id"], name: "index_items_on_search_condition_id", using: :btree
   add_index "items", ["user_id", "asin"], name: "index_items_on_user_id_and_asin", using: :btree
 
   create_table "labels", force: true do |t|
@@ -33,6 +34,8 @@ ActiveRecord::Schema.define(version: 20151129032503) do
     t.datetime "updated_at"
   end
 
+  add_index "labels", ["user_id"], name: "index_labels_on_user_id", using: :btree
+
   create_table "prohibited_words", force: true do |t|
     t.integer  "user_id",    null: false
     t.string   "name",       null: false
@@ -40,8 +43,10 @@ ActiveRecord::Schema.define(version: 20151129032503) do
     t.datetime "updated_at"
   end
 
+  add_index "prohibited_words", ["user_id"], name: "index_prohibited_words_on_user_id", using: :btree
+
   create_table "search_conditions", force: true do |t|
-    t.string   "label_id",       null: false
+    t.integer  "label_id",       null: false
     t.string   "keyword"
     t.string   "negative_match"
     t.string   "category",       null: false
@@ -49,6 +54,8 @@ ActiveRecord::Schema.define(version: 20151129032503) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "search_conditions", ["label_id"], name: "index_search_conditions_on_label_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "email",                  default: "", null: false
