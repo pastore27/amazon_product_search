@@ -81,7 +81,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -141,7 +141,7 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -258,6 +258,13 @@ class ItemsController < ApplicationController
     send_file(tmp_zip,
               :type => 'application/zip',
               :filename => NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).zip"))
+  end
+
+  def delete
+    item = Item.find_by(id: params[:item_id], label_id: params[:id], user_id: current_user.id)
+    item.destroy if item.present?
+
+    redirect_to :action => 'index'
   end
 
 end
