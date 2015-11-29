@@ -260,4 +260,11 @@ class ItemsController < ApplicationController
               :filename => NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).zip"))
   end
 
+  def delete
+    item = Item.find_by(id: params[:item_id], label_id: params[:id], user_id: current_user.id)
+    item.destroy if item.present?
+
+    redirect_to :action => 'index'
+  end
+
 end
