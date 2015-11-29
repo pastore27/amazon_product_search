@@ -38,6 +38,8 @@ class ApplicationController < ActionController::Base
     ret_items = []
     res.items.each do |item|
       insert_item = _format_item(item)
+      # search_condition条件を追加する (商品追加の際に利用するため)
+      insert_item['search_condition_id'] = condition['id']
       next unless _validate_item(insert_item, condition)
       ret_items.push(insert_item)
     end
@@ -111,6 +113,8 @@ class ApplicationController < ActionController::Base
     variation_items = []
     res.items.each do |item|
       insert_item = _format_item(item)
+      # search_condition条件を追加する (商品追加の際に利用するため)
+      insert_item['search_condition_id'] = condition['id']
       next unless _validate_item(insert_item, condition)
       variation_items.push(insert_item)
     end
