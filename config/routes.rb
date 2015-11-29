@@ -3,7 +3,8 @@ Rails.application.routes.draw do
   root to: "labels#index"
 
   devise_for :users, :controllers => {
-               :registrations => 'users/registrations'
+               :registrations => 'users/registrations',
+               :passwords     => 'users/passwords'
              }
   resources :users, :only => [:index]
 
