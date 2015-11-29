@@ -11,9 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151128092906) do
+ActiveRecord::Schema.define(version: 20151129032503) do
 
   create_table "items", force: true do |t|
+    t.integer  "user_id",    null: false
     t.integer  "label_id",   null: false
     t.string   "asin",       null: false
     t.string   "code"
@@ -23,13 +24,17 @@ ActiveRecord::Schema.define(version: 20151128092906) do
     t.datetime "updated_at"
   end
 
+  add_index "items", ["user_id", "asin"], name: "index_items_on_user_id_and_asin", using: :btree
+
   create_table "labels", force: true do |t|
+    t.integer  "user_id",    null: false
     t.string   "name",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "prohibited_words", force: true do |t|
+    t.integer  "user_id",    null: false
     t.string   "name",       null: false
     t.datetime "created_at"
     t.datetime "updated_at"

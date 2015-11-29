@@ -1,32 +1,32 @@
 Rails.application.routes.draw do
 
-  devise_for :users, :controllers => {
-               :registrations => 'users/registrations'
-             }
-  root to: "labels#show"
+  root to: "labels#index"
 
-  get  "/search_products"          => "search_products#show"
+  devise_for :users, :controllers => {
+               :registrations => 'users/registrations',
+               :passwords     => 'users/passwords'
+             }
+  resources :users, :only => [:index]
+
+  get  "/search_products"          => "search_products#index"
   post "/search_products/products" => "search_products#get_products"
   post "/search_products/create"   => "search_products#create_search_condition"
 
-  get  "/export_products"     => "export_products#show"
-  post "/export_products/csv" => "export_products#download", format: "csv"
+  get  "/labels"                                  => "labels#index"
+  get  "/labels/new"                              => "labels#create_form"
+  post "/labels/create"                           => "labels#create"
+  get  "/labels/:user_id/:id/update"              => "labels#update_form"
+  post "/labels/:user_id/:id/update"              => "labels#update"
+  get  "/labels/:user_id/:id/delete"              => "labels#delete"
+  get  "/labels/:user_id/:id/search_conditions"   => "labels#search_conditions"
+  get  "/labels/:user_id/:id/items"               => "items#index"
+  post "/labels/:user_id/:id/add_items"           => "items#add_items"
+  post "/labels/:user_id/:id/download_items"      => "items#download_items"
+  post "/labels/:user_id/:id/:page/download_imgs" => "items#download_imgs"
+  post "/labels/:user_id/:id/check_stock"         => "items#check_stock"
+  get  "/labels/:user_id/:id/search_condition/:search_condition_id/delete" => "labels#delete_search_condition"
 
-  get  "/labels"                         => "labels#show"
-  get  "/labels/new"                     => "labels#create_form"
-  post "/labels/create"                  => "labels#create"
-  get  "/labels/:id/update"              => "labels#update_form"
-  post "/labels/:id/update"              => "labels#update"
-  get  "/labels/:id/delete"              => "labels#delete"
-  get  "/labels/:id/search_conditions"   => "labels#search_conditions"
-  get  "/labels/:id/items"               => "items#show"
-  post "/labels/:id/add_items"           => "items#add_items"
-  post "/labels/:id/download_items"      => "items#download_items"
-  post "/labels/:id/:page/download_imgs" => "items#download_imgs"
-  post "/labels/:id/check_stock"         => "items#check_stock"
-  get  "/labels/:id/search_condition/:search_condition_id/delete" => "labels#delete_search_condition"
-
-  get  "/prohibited_words"            => "prohibited_words#show"
+  get  "/prohibited_words"            => "prohibited_words#index"
   get  "/prohibited_words/new"        => "prohibited_words#create_form"
   post "/prohibited_words/create"     => "prohibited_words#create"
   get  "/prohibited_words/:id/delete" => "prohibited_words#delete"

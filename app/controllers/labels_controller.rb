@@ -2,10 +2,11 @@
 class LabelsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
+  before_action :correct_user
 
-  def show
-    @labels = Label.all
+  def index
+    @labels = Label.where(user_id: current_user.id)
   end
 
   def create_form
@@ -14,27 +15,28 @@ class LabelsController < ApplicationController
 
   def create
     label = Label.new(
-      :name => params['name']
+      :user_id => current_user.id,
+      :name    => params['name']
     )
     label.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def update_form
-    @label = Label.find_by(id: params[:id])
+    @label = Label.find_by(id: params[:id], user_id: current_user.id)
   end
 
   def update
-    label = Label.find_by(id: params[:id])
+    label = Label.find_by(id: params[:id], user_id: current_user.id)
     label.name = params['name']
     label.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def delete
-    label = Label.find_by(id: params[:id])
+    label = Label.find_by(id: params[:id], user_id: current_user.id)
     label.destroy if label.present?
 
     # 紐付く検索条件も削除する
@@ -42,11 +44,11 @@ class LabelsController < ApplicationController
     # 紐付く商品情報も削除する
     Item.delete_all(label_id: params[:id])
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
   def search_conditions
-    @label = Label.find_by(id: params[:id])
+    @label = Label.find_by(id: params[:id], user_id: current_user.id)
     @search_conditions = SearchCondition.where(label_id: params[:id])
   end
 
@@ -56,4 +58,5 @@ class LabelsController < ApplicationController
 
     redirect_to :action => 'search_conditions', :id => params[:id]
   end
+
 end

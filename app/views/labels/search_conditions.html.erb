@@ -18,7 +18,7 @@
       <td><%= search_condition.category %></td>
       <td><% if search_condition.is_prime == 1 %>あり<% end %></td>
       <td>
-        <a href="/labels/<%= @label.id %>/search_condition/<%= search_condition.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
+        <a href="/labels/<%= current_user.id %>/<%= @label.id %>/search_condition/<%= search_condition.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
       </td>
     </tr>
     <% end %>
@@ -30,7 +30,7 @@
 <h3>商品を追加する</h3>
 <pre>上記検索条件で最新の商品を追加します。追加された商品をCSV出力する際のオプションを以下で設定してください。</pre>
 
-<%= form_tag("/labels/#{@label.id}/add_items", method: :post) do %>
+<%= form_tag("/labels/#{current_user.id}/#{@label.id}/add_items", method: :post) do %>
   <h4>オプション</h4>
 
   <div class="form-group">

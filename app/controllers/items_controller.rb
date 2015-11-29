@@ -3,9 +3,10 @@ class ItemsController < ApplicationController
   PER = 50
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
+  before_action :correct_user
 
-  def show
+  def index
     @label = Label.find_by(id: params[:id])
     @items = Item.where(label_id: params[:id]).page(params[:page]).per(PER).order('id ASC')
     @page = params[:page] || 1
@@ -14,7 +15,7 @@ class ItemsController < ApplicationController
   def add_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
     search_conditions = SearchCondition.where(label_id: label_id)
 
     # Amazon APIよりデータを取得
@@ -37,6 +38,7 @@ class ItemsController < ApplicationController
       asin = fetched_item['asin']
       code = generate_code(asin, label_id)
       item = Item.new(
+        :user_id  => current_user.id,
         :label_id => label_id,
         :asin     => asin,
         :code     => code,
@@ -76,11 +78,10 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -93,7 +94,7 @@ class ItemsController < ApplicationController
   def download_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # csv出力するデータを選定
     csv_items = []
@@ -137,11 +138,10 @@ class ItemsController < ApplicationController
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      ar.add_dir(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})"))
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name})/#{label.name + count.to_s}.csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name + count.to_s}).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
     end
@@ -154,7 +154,7 @@ class ItemsController < ApplicationController
   def download_imgs
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
@@ -217,7 +217,7 @@ class ItemsController < ApplicationController
   def check_stock
     # ラベルに紐づく検索条件を取得
     label_id = params[:id]
-    label = Label.find(label_id)
+    label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る

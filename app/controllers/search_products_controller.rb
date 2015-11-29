@@ -2,9 +2,9 @@
 class SearchProductsController < ApplicationController
 
   # ユーザがログインしていないとにアクセスできないように
-  before_action :authenticate_user!, only: :show
+  before_action :authenticate_user!
 
-  def show
+  def index
     @search_conditions = SearchCondition.all
   end
 
@@ -28,7 +28,7 @@ class SearchProductsController < ApplicationController
     end
 
     @search_info['item_total'] = @items.length
-    @labels = Label.all
+    @labels = Label.where(user_id: current_user.id)
   end
 
   def create_search_condition
@@ -42,7 +42,7 @@ class SearchProductsController < ApplicationController
     )
     search_condition.save
 
-    redirect_to :action => 'show'
+    redirect_to :action => 'index'
   end
 
 end

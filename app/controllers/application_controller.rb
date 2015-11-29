@@ -129,7 +129,7 @@ class ApplicationController < ActionController::Base
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
-    prohibited_words = ProhibitedWord.all
+    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
     prohibited_words.each do |prohibited_word|
       return false if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
     end
@@ -240,4 +240,15 @@ class ApplicationController < ActionController::Base
     return code
   end
 
+  # user_idの認証
+  def correct_user
+    if params[:user_id]
+      redirect_to(root_path) unless current_user.id.to_s == params[:user_id].to_s
+    end
+  end
+
+  # adminの認証
+  def admin_user
+    redirect_to(root_path) unless current_user && current_user.id.to_s == '1'
+  end
 end
