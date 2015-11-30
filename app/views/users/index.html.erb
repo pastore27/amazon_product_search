@@ -8,6 +8,8 @@
   <thead>
     <tr>
       <th>ユーザ</th>
+      <th>メモ</th>
+      <th>編集</th>
       <th>削除</th>
     </tr>
   </thead>
@@ -15,6 +17,12 @@
     <% @users.each do |user| %>
     <tr>
       <td><%= user.email %></td>
+      <td><%= user.memo %></td>
+      <td>
+        <% if user.id.to_s != '1' %>
+        <a href="/users/<%= user.id %>/update_memo">編集</a>
+        <% end %>
+      </td>
       <td>
         <% if user.id.to_s != '1' %>
         <%= link_to '削除', users_path(:id => user.id), :method => :delete, :confirm => "本当に削除しますか?" %>

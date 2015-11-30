@@ -9,4 +9,16 @@ class UsersController < ApplicationController
     @users = User.all
   end
 
+  def update_memo_form
+    @user = User.find_by(id: params[:user_id])
+  end
+
+  def update_memo
+    user = User.find_by(id: params[:user_id])
+    user.memo = params['memo']
+    user.save
+
+    redirect_to :action => 'index'
+  end
+
 end
