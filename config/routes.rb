@@ -7,6 +7,8 @@ Rails.application.routes.draw do
                :passwords     => 'users/passwords'
              }
   resources :users, :only => [:index]
+  get  "/users/:user_id/update_memo" => "users#update_memo_form"
+  post "/users/:user_id/update_memo" => "users#update_memo"
 
   get  "/search_products"          => "search_products#index"
   post "/search_products/products" => "search_products#get_products"

@@ -1,0 +1,7 @@
+<%= form_tag("/users/#{@user.id}/update_memo", method: :post) do %>
+  <div class="form-group">
+    <label>メモ</label>
+    <input name="memo" class="form-control" value="<%= @user.memo %>">
+  </div>
+  <%= submit_tag '更新', :class => "btn btn-primary" %>
+<% end %>
