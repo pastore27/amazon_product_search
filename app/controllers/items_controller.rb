@@ -42,7 +42,7 @@ class ItemsController < ApplicationController
         :search_condition_id => fetched_item['search_condition_id'],
         :asin                 => asin,
         :code                 => code,
-        :name                 => fetched_item['title'],
+        :name                 => fetched_item['title'].byteslice(0,255).scrub(''), # nameカラムは255byte以内
         :is_prime             => fetched_item['is_prime']
       )
       if item.save
