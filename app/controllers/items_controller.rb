@@ -222,7 +222,7 @@ class ItemsController < ApplicationController
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
     asins = []
-    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC').each do |item|
+    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).each do |item|
       asins.push(item.asin)
     end
 
@@ -232,9 +232,9 @@ class ItemsController < ApplicationController
     out_of_stock_codes = []
     fetched_items.each do |fetched_item|
       # プライムだったものが、プライムでなくなった場合、在庫切れとする
-      unless fetched_item['is_prime'] then
+      unless fetched_item['is_prime'].to_s == '1' then
         stored_item = Item.find_by(asin: fetched_item['asin'])
-        if stored_item.is_prime then
+        if stored_item.is_prime.to_s == '1' then
           out_of_stock_codes.push(fetched_item['code'])
           next
         end
