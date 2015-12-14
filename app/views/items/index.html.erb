@@ -6,6 +6,7 @@
       <th>code</th>
       <th>商品名</th>
       <th>プライム指定</th>
+      <th>追加日</th>
       <th>削除</th>
     </tr>
   </thead>
@@ -15,6 +16,7 @@
       <td><%= item.code %></td>
       <td><%= item.name %></td>
       <td><% if item.is_prime == 1 %>◯<% end %></td>
+      <td><%= item.created_at %></td>
       <td>
         <a href="/labels/<%= current_user.id %>/<%= @label.id %>/items/<%= item.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
       </td>
