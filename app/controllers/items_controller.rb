@@ -176,15 +176,23 @@ class ItemsController < ApplicationController
     export_items.each do |export_item|
       item_img_data = { code: export_item['code'] }
       if export_item['main_img_url'] then
-        open(export_item['main_img_url']) do |main_img_data|
-          item_img_data['main_img'] = main_img_data.read
+        begin
+          open(export_item['main_img_url']) do |main_img_data|
+            item_img_data['main_img'] = main_img_data.read
+          end
+        rescue
+          next
         end
       end
       item_img_data['sub_img'] = []
       if export_item['sub_img_urls'] then
         export_item['sub_img_urls'].each do |url|
-          open(url) do |sub_img_data|
-            item_img_data['sub_img'].push(sub_img_data.read)
+          begin
+            open(url) do |sub_img_data|
+              item_img_data['sub_img'].push(sub_img_data.read)
+            end
+          rescue
+            next
           end
         end
       end
