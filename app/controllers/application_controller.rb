@@ -152,13 +152,14 @@ class ApplicationController < ActionController::Base
     is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
     availability = offer_listing ? offer_listing.get('Availability') : 0
     price = offer_listing ? offer_listing.get('Price/Amount') : 0
+    sale_price = offer_listing ? offer_listing.get('SalePrice/Amount') : 0
 
     insert_item = {
       'asin'         => item.get('ASIN'),
       'jan'          => item_attributes ? item_attributes.get('EAN') : '',
       'title'        => item_attributes ? item_attributes.get('Title') : '',
       'url'          => item.get('DetailPageURL'),
-      'price'        => price,
+      'price'        => sale_price || price,
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
       'is_prime'     => is_prime,
