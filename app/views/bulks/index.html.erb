@@ -1,6 +1,6 @@
 <h3>一括で検索条件をラベルに登録する</h3>
 <pre>複数の検索条件を一括でラベルに登録します。1ラベルあたり20検索条件になります。</pre>
-<%= form_tag("/bulks/#{current_user.id}/add_search_condition", method: :post) do %>
+<%= form_tag("/bulks/#{current_user.id}/add_search_conditions", method: :post) do %>
   <div class="form-group">
     <label>ラベル</label>
     <input name="label" class="form-control">
