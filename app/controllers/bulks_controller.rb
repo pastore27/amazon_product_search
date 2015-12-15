@@ -1,0 +1,2 @@
+class BulksController < ApplicationController
+end
