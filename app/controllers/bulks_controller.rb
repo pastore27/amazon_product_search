@@ -10,7 +10,29 @@ class BulksController < ApplicationController
   end
 
   def add_search_conditions
+    keywords = params[:keyword]
+    count = 1
+    keywords.each_slice(10).to_a.each do |ele|
+      # ラベルの登録
+      label = Label.new(
+        :user_id => current_user.id,
+        :name    => "#{params['label']}_#{count}"
+      )
+      label.save
+      ele.each do |keyword|
+        search_condition = SearchCondition.new(
+          :label_id       => label.id,
+          :keyword        => keyword,
+          :negative_match => params['negative_match'],
+          :category       => params['category'],
+          :is_prime       => params['is_prime']
+        )
+        search_condition.save
+      end
+      count += 1
+    end
 
+    redirect_to :action => 'index'
   end
 
   def check_stock
