@@ -36,5 +36,7 @@ module AmazonProductSearch
 
     # deviseの言語設定
     config.i18n.default_locale = :ja
+    # DBはUTCのまま、表示のみをJSTにする
+    config.time_zone = 'Tokyo'
   end
 end
