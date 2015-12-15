@@ -1,3 +1,60 @@
+<h3>一括で検索条件をラベルに登録する</h3>
+<pre>複数の検索条件を一括でラベルに登録します。1ラベルあたり20検索条件になります。</pre>
+<%= form_tag("/bulks/#{current_user.id}/add_search_condition", method: :post) do %>
+  <div class="form-group">
+    <label>ラベル</label>
+    <input name="label" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>キーワード</label>
+    <input name="keyword" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>除外ワード</label>
+    <input name="negative_match" class="form-control">
+  </div>
+  <div class="form-group">
+    <label>カテゴリ</label>
+    <select name="category" class="form-control">
+      <option value="All">すべてのカテゴリー</option>
+      <option value="Books">本</option>
+      <option value="ForeignBooks">洋書</option>
+      <option value="Music">ミュージック</option>
+      <option value="Classical">クラシック</option>
+      <option value="DVD">DVD</option>
+      <option value="VideoGames">TVゲーム</option>
+      <option value="Software">PCソフト</option>
+      <option value="PCHardware">パソコン・周辺機器</option>
+      <option value="Electronics">家電&カメラ</option>
+      <option value="OfficeProducts">文房具・オフィス用品</option>
+      <option value="Kitchen">ホーム&キッチン</option>
+      <option value="PetSupplies">ペット用品</option>
+      <option value="HealthPersonalCare">ヘルス&ビューティー</option>
+      <option value="Beauty">コスメ</option>
+      <option value="Grocery">食品・飲料・お酒</option>
+      <option value="Baby">ベビー＆マタニティ</option>
+      <option value="Appaerl">服＆ファッション小物</option>
+      <option value="Shoes">シューズ＆バッグ</option>
+      <option value="Watches">腕時計</option>
+      <option value="Jewelry">ジュエリー</option>
+      <option value="Toys">おもちゃ</option>
+      <option value="Hobbies">ホビー</option>
+      <option value="MusicalInstruments">楽器</option>
+      <option value="SportingGoods">スポーツ&アウトドア</option>
+      <option value="Automotive">カー・バイク用品</option>
+      <option value="HomeImprovement">DIY・工具</option>
+      <option value="Appliances">大型家電</option>
+      <option value="Industrial">産業・研究開発用品</option>
+    </select>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input name="is_prime" type="checkbox" value="1">Amazonプライム指定
+    </label>
+  </div>
+  <%= submit_tag '上記検索条件を一括登録', :class => "btn btn-primary" %>
+<% end %>
+
 <h3>一括で商品の在庫を確認する</h3>
 <pre>全ラベルのすべての商品の在庫を確認します。在庫がなくなった商品code一覧をCSV出力します。また、在庫がなくなった商品は削除します。</pre>
 <%= form_tag("/bulks/#{current_user.id}/check_stock", method: :post) do %>
