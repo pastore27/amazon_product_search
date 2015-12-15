@@ -34,6 +34,10 @@ Rails.application.routes.draw do
   post "/prohibited_words/create"     => "prohibited_words#create"
   get  "/prohibited_words/:id/delete" => "prohibited_words#delete"
 
+  get  "/bulks"                                => "bulks#index"
+  post "/bulks/:user_id/add_search_conditions" => "bulks#add_search_conditions"
+  post "/bulks/:user_id/check_stock"           => "bulks#check_stock"
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
