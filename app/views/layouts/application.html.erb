@@ -17,6 +17,7 @@
         <li <% if controller.controller_name == "search_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
         <li <% if controller.controller_name == "labels" || controller.controller_name == "items" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
         <li <% if controller.controller_name == "prohibited_words" %>class="active"<% end %>><a href="/prohibited_words">禁止ワード管理</a></li>
+        <li <% if controller.controller_name == "bulk" %>class="active"<% end %>><a href="/bulks">一括機能</a></li>
         <% end %>
       </ul>
       <ul class="nav navbar-nav navbar-right">
