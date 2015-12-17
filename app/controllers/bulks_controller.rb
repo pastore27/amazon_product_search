@@ -12,7 +12,8 @@ class BulksController < ApplicationController
   def add_search_conditions
     keywords = params[:keyword]
     count = 1
-    keywords.each_slice(10).to_a.each do |ele|
+    # 1ラベルあたり20検索条件
+    keywords.each_slice(20).to_a.each do |ele|
       # ラベルの登録
       label = Label.new(
         :user_id => current_user.id,
