@@ -10,9 +10,12 @@ class BulksController < ApplicationController
   end
 
   def add_search_conditions
-    keywords = params[:keyword]
+    keyword = params[:keyword]
+    keywords = keyword.rstrip.split(/\r?\n/).map {|line| line.chomp }
+    keywords = keywords.reject(&:blank?)
     count = 1
-    keywords.each_slice(10).to_a.each do |ele|
+    # 1ラベルあたり20検索条件
+    keywords.each_slice(20).to_a.each do |ele|
       # ラベルの登録
       label = Label.new(
         :user_id => current_user.id,
@@ -25,7 +28,7 @@ class BulksController < ApplicationController
           :keyword        => keyword,
           :negative_match => params['negative_match'],
           :category       => params['category'],
-          :is_prime       => params['is_prime']
+          :is_prime       => params['is_prime'] || "0"
         )
         search_condition.save
       end
