@@ -10,7 +10,9 @@ class BulksController < ApplicationController
   end
 
   def add_search_conditions
-    keywords = params[:keyword]
+    keyword = params[:keyword]
+    keywords = keyword.rstrip.split(/\r?\n/).map {|line| line.chomp }
+    keywords = keywords.reject(&:blank?)
     count = 1
     # 1ラベルあたり20検索条件
     keywords.each_slice(20).to_a.each do |ele|
