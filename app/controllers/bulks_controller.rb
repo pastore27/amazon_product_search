@@ -28,7 +28,7 @@ class BulksController < ApplicationController
           :keyword        => keyword,
           :negative_match => params['negative_match'],
           :category       => params['category'],
-          :is_prime       => params['is_prime']
+          :is_prime       => params['is_prime'] || "0"
         )
         search_condition.save
       end
