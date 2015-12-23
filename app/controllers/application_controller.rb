@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition)
+      next unless validate_item(insert_item, condition)
       ret_items.push(insert_item)
     end
 
@@ -115,7 +115,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition)
+      next unless validate_item(insert_item, condition)
       variation_items.push(insert_item)
     end
 
@@ -125,7 +125,7 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def _validate_item(item, condition)
+  def validate_item(item, condition)
     # プライム指定でフィルタリング
     return false unless _check_condition_of_is_prime(item, condition['is_prime'].to_s)
     # 在庫状況でフィルタリング
