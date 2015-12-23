@@ -42,7 +42,7 @@ class BulksController < ApplicationController
     # userに紐づく検索条件を取得
     labels = Label.where(user_id: current_user.id)
 
-    fetched_items = []
+    out_of_stock_codes = []
     labels.each do |label|
       # 保存済みの商品データを取得
       # ここでdbからデータを取得し、apiリクエストを送る
@@ -51,16 +51,7 @@ class BulksController < ApplicationController
         asins.push(item.asin)
       end
 
-      # item_lookup APIを叩く
-      fetched_items.concat(req_lookup_api(asins, label.id))
-    end
-
-    out_of_stock_codes = []
-    fetched_items.each do |fetched_item|
-      unless validate_item_stock(fetched_item) then
-        out_of_stock_codes.push(fetched_item['code'])
-        next
-      end
+      out_of_stock_codes.concat(extract_out_of_stock_codes(req_lookup_api(asins, label.id)))
     end
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s

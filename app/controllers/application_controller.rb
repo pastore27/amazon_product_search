@@ -165,7 +165,7 @@ class ApplicationController < ActionController::Base
   def validate_item(item, condition)
     # プライム指定でフィルタリング
     if condition then
-      return false unless _check_condition_of_is_prime(item, condition['is_prime'].to_s)
+      return false unless _validate_is_prime(item, condition['is_prime'].to_s)
     end
     # 在庫状況でフィルタリング
     return false unless validate_item_availability(item['availability'])
@@ -210,8 +210,8 @@ class ApplicationController < ActionController::Base
     return insert_item
   end
 
-  def _check_condition_of_is_prime(item, is_prime)
-    if is_prime == '1' then
+  def _validate_is_prime(item, specified_is_prime)
+    if specified_is_prime == '1' then
       return true  if item['is_prime'].to_s == '1'
     else
       return true
@@ -238,6 +238,17 @@ class ApplicationController < ActionController::Base
 
   def delete_items_by_codes(codes)
     Item.delete_all(code: codes)
+  end
+
+  def extract_out_of_stock_codes(items)
+    out_of_stock_codes = []
+    items.each do |item|
+      unless validate_item_stock(item) then
+        out_of_stock_codes.push(item['code'])
+        next
+      end
+    end
+    return out_of_stock_codes
   end
 
   def create_csv_str(items, csv_option)

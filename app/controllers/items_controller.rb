@@ -265,16 +265,7 @@ class ItemsController < ApplicationController
       asins.push(item.asin)
     end
 
-    # item_lookup APIを叩く
-    fetched_items = req_lookup_api(asins, label_id)
-
-    out_of_stock_codes = []
-    fetched_items.each do |fetched_item|
-      unless validate_item_stock(fetched_item) then
-        out_of_stock_codes.push(fetched_item['code'])
-        next
-      end
-    end
+    out_of_stock_codes = extract_out_of_stock_codes(req_lookup_api(asins, label_id))
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
