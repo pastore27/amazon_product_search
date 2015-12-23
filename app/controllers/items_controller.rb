@@ -97,7 +97,8 @@ class ItemsController < ApplicationController
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # csv出力するデータを選定
-    csv_items = []
+    csv_items_in_stock     = []
+    csv_items_out_of_stock = []
 
     # 保存済みの商品データを取得
     # ここでdbからデータを取得し、apiリクエストを送る
@@ -107,9 +108,22 @@ class ItemsController < ApplicationController
     end
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api(asins, label_id) # codeを生成するために、label_idを渡す必要がある
-    stored_items.each do |stored_item|
-      csv_items.push({
+    stored_items = req_lookup_api_with_check_stock(asins, label_id) # codeを生成するために、label_idを渡す必要がある
+    stored_items[:in_stock_items].each do |stored_item|
+      csv_items_in_stock.push({
+                       'asin'         => stored_item['asin'],
+                       'code'         => stored_item['code'],
+                       'jan'          => stored_item['jan'],
+                       'title'        => stored_item['title'],
+                       'price'        => stored_item['price'].to_i,
+                       'headline'     => stored_item['headline'],
+                       'features'     => stored_item['features'],
+                       'main_img_url' => stored_item['main_img_url'],
+                       'sub_img_urls' => stored_item['sub_img_urls']
+                     })
+    end
+    stored_items[:out_of_stock_items].each do |stored_item|
+      csv_items_out_of_stock.push({
                        'asin'         => stored_item['asin'],
                        'code'         => stored_item['code'],
                        'jan'          => stored_item['jan'],
@@ -122,6 +136,23 @@ class ItemsController < ApplicationController
                      })
     end
 
+    out_of_stock_codes = []
+    csv_items_out_of_stock.each do |fetched_item|
+      # プライムだったものが、プライムでなくなった場合、在庫切れとする
+      unless fetched_item['is_prime'].to_s == '1' then
+        stored_item = Item.find_by(asin: fetched_item['asin'])
+        if stored_item.is_prime.to_s == '1' then
+          out_of_stock_codes.push(fetched_item['code'])
+          next
+        end
+      end
+
+      unless ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(fetched_item['availability']) then
+        out_of_stock_codes.push(fetched_item['code'])
+        next
+      end
+    end
+
     # csv出力オプション
     csv_option = {
       'path'               => params['path'],
@@ -132,19 +163,24 @@ class ItemsController < ApplicationController
 
     # csv出力
     csv_strs = []
-    csv_items.each_slice(1000).to_a.each do |ele|
+    csv_items_in_stock.each_slice(1000).to_a.each do |ele|
       csv_strs.push(create_csv_str(ele, csv_option)) if ele
     end
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      # csvファイルの追加
+      # 商品一覧csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
         ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"), NKF::nkf('--sjis -Lw', csv_str))
         count += 1
       end
+      # 在庫なしcsvファイルの追加
+      ar.add_buffer(NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes)))
     end
+
+    # 在庫なし商品の削除
+    Item.delete_all(code: out_of_stock_codes)
 
     send_file(tmp_zip,
               :type => 'application/zip',
