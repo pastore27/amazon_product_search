@@ -256,11 +256,10 @@ class ItemsController < ApplicationController
   def check_stock
     # ラベルに紐づく検索条件を取得
     label_id = params[:label_id]
-    label = Label.find_by(id: label_id, user_id: current_user.id)
-
+    label    = Label.find_by(id: label_id, user_id: current_user.id)
     out_of_stock_codes = extract_out_of_stock_codes(
                            req_lookup_api(
-                             fetch_asins_by_label(label.id), label_id
+                             fetch_asins_by_label(label_id), label_id
                            )
                          )
 

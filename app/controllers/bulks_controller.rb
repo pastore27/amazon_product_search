@@ -39,9 +39,7 @@ class BulksController < ApplicationController
   end
 
   def check_stock
-    # userに紐づく検索条件を取得
     labels = Label.where(user_id: current_user.id)
-
     out_of_stock_codes = []
     labels.each do |label|
       out_of_stock_codes.concat(
