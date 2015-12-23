@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition)
+      next unless validate_item(insert_item, condition)
       ret_items.push(insert_item)
     end
 
@@ -91,6 +91,43 @@ class ApplicationController < ActionController::Base
     return ret_items
   end
 
+  # 在庫チェックも行う
+  def req_lookup_api_with_check_stock(asins, label_id)
+    in_stock_items     = []
+    out_of_stock_items = []
+
+    # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
+    asins.each_slice(10).to_a.each do |ele|
+      retry_count = 0
+      begin
+        res = Amazon::Ecs.item_lookup(ele.join(','),
+                                      :response_group => 'Large',
+                                      :country        => 'jp'
+                                     )
+      rescue
+        retry_count += 1
+        if retry_count < 5
+          sleep(5)
+          retry
+        else
+          return false
+        end
+      end
+
+      res.items.each do |item|
+        insert_item = _format_item(item)
+        # codeを生成する
+        insert_item['code'] = generate_code(insert_item['asin'], label_id)
+        validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
+      end
+    end
+
+    return {
+      :in_stock_items     => in_stock_items,
+      :out_of_stock_items => out_of_stock_items
+    }
+  end
+
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
   def _get_variation_items(parent_asins, condition)
@@ -115,7 +152,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition)
+      next unless validate_item(insert_item, condition)
       variation_items.push(insert_item)
     end
 
@@ -125,11 +162,13 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def _validate_item(item, condition)
+  def validate_item(item, condition)
     # プライム指定でフィルタリング
-    return false unless _check_condition_of_is_prime(item, condition['is_prime'].to_s)
+    if condition then
+      return false unless _validate_is_prime(item, condition['is_prime'].to_s)
+    end
     # 在庫状況でフィルタリング
-    return false unless _is_availability(item)
+    return false unless validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
@@ -171,8 +210,8 @@ class ApplicationController < ActionController::Base
     return insert_item
   end
 
-  def _check_condition_of_is_prime(item, is_prime)
-    if is_prime == '1' then
+  def _validate_is_prime(item, specified_is_prime)
+    if specified_is_prime == '1' then
       return true  if item['is_prime'].to_s == '1'
     else
       return true
@@ -180,9 +219,44 @@ class ApplicationController < ActionController::Base
     return false
   end
 
-  def _is_availability(item)
-    return true if ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(item['availability'])
-    return false
+  def _validate_item_availability(availability)
+    ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(availability)
+  end
+
+  # プライムだったものが、プライムでなくなった場合、在庫切れとする
+  def _validate_item_status_of_is_prime(asin, is_prime_now)
+    unless is_prime_now == '1' then
+      stored_item = Item.find_by(asin: asin)
+      return stored_item.is_prime.to_s == '1' ? false : true
+    end
+    true
+  end
+
+  def validate_item_stock(item)
+    _validate_item_availability(item['availability']) && _validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
+  end
+
+  def fetch_asins_by_label(label_id)
+    asins = []
+    Item.joins(:search_condition).where(search_conditions: {label_id: label_id}).each do |item|
+      asins.push(item.asin)
+    end
+    return asins
+  end
+
+  def delete_items_by_codes(codes)
+    Item.delete_all(code: codes)
+  end
+
+  def extract_out_of_stock_codes(items)
+    out_of_stock_codes = []
+    items.each do |item|
+      unless validate_item_stock(item) then
+        out_of_stock_codes.push(item['code'])
+        next
+      end
+    end
+    return out_of_stock_codes
   end
 
   def create_csv_str(items, csv_option)
