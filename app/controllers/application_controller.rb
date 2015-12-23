@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless validate_item(insert_item, condition)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s)
       ret_items.push(insert_item)
     end
 
@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
         insert_item = _format_item(item)
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
-        validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
+        _validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
       end
     end
 
@@ -152,7 +152,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless validate_item(insert_item, condition)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s)
       variation_items.push(insert_item)
     end
 
@@ -162,10 +162,10 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def validate_item(item, condition)
+  def _validate_item(item, specified_is_prime)
     # プライム指定でフィルタリング
-    if condition then
-      return false unless _validate_is_prime(item, condition['is_prime'].to_s)
+    if specified_is_prime == '1' then
+      return false unless _is_prime(item['is_prime'].to_s)
     end
     # 在庫状況でフィルタリング
     return false unless _validate_item_availability(item['availability'])
@@ -210,13 +210,8 @@ class ApplicationController < ActionController::Base
     return insert_item
   end
 
-  def _validate_is_prime(item, specified_is_prime)
-    if specified_is_prime == '1' then
-      return true  if item['is_prime'].to_s == '1'
-    else
-      return true
-    end
-    return false
+  def _is_prime(is_prime)
+    is_prime == '1'
   end
 
   def _validate_item_availability(availability)
@@ -283,7 +278,6 @@ class ApplicationController < ActionController::Base
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
     # テンプレートファイルを開く
     caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
-
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
@@ -297,7 +291,6 @@ class ApplicationController < ActionController::Base
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
         csv_body['explanation'] = csv_option['explanation'] if csv_option['explanation']
-
         # 金額調整
         if (csv_option['price_option_value'])  then
           if (csv_option['price_option_unit'] == 'yen') then
@@ -311,26 +304,21 @@ class ApplicationController < ActionController::Base
         csv << csv_body.values_at(*csv_header)
       end
     end
-
     return csv_str
   end
 
   def create_out_stock_csv_str(codes)
     csv_header = %w/ code /
-
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
       # body の追加
       codes.each do |code|
         csv_body = {}
-
         csv_body['code'] = code
-
         csv << csv_body.values_at(*csv_header)
       end
     end
-
     return csv_str
   end
 
