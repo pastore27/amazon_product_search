@@ -164,9 +164,7 @@ class ApplicationController < ActionController::Base
 
   def _validate_item(item, specified_is_prime)
     # プライム指定でフィルタリング
-    if specified_is_prime == '1' then
-      return false unless _is_prime(item['is_prime'].to_s)
-    end
+    return false  if (specified_is_prime == '1') && !_is_prime(item['is_prime'].to_s)
     # 在庫状況でフィルタリング
     return false unless _validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
