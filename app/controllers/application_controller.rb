@@ -259,6 +259,10 @@ class ApplicationController < ActionController::Base
     return out_of_stock_codes
   end
 
+  def generate_tmp_zip_file_name()
+    Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+  end
+
   def create_csv_str(items, csv_option)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
     # テンプレートファイルを開く
