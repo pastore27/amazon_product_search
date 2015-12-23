@@ -321,15 +321,12 @@ class ApplicationController < ActionController::Base
   end
 
   def generate_code(asin, label_id)
-    code = label_id.to_s + Digest::MD5.hexdigest(asin[0,5])[0,5] + Digest::MD5.hexdigest(asin[5,5])[0,5] # code = label_id + 暗号文字列先頭の10文字
-    return code
+    label_id.to_s + Digest::MD5.hexdigest(asin[0,5])[0,5] + Digest::MD5.hexdigest(asin[5,5])[0,5] # code = label_id + 暗号文字列
   end
 
   # user_idの認証
   def correct_user
-    if params[:user_id]
-      redirect_to(root_path) unless current_user.id.to_s == params[:user_id].to_s
-    end
+    redirect_to(root_path) if params[:user_id] && ( current_user.id.to_s != params[:user_id].to_s )
   end
 
   # adminの認証
