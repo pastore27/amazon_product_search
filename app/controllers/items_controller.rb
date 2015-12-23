@@ -258,14 +258,11 @@ class ItemsController < ApplicationController
     label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
-    # 保存済みの商品データを取得
-    # ここでdbからデータを取得し、apiリクエストを送る
-    asins = []
-    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).each do |item|
-      asins.push(item.asin)
-    end
-
-    out_of_stock_codes = extract_out_of_stock_codes(req_lookup_api(asins, label_id))
+    out_of_stock_codes = extract_out_of_stock_codes(
+                           req_lookup_api(
+                             fetch_asins_by_label(label.id), label_id
+                           )
+                         )
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|

@@ -224,16 +224,24 @@ class ApplicationController < ActionController::Base
   end
 
   # プライムだったものが、プライムでなくなった場合、在庫切れとする
-  def _validate_item_status_of_is_prime(item, is_prime_now)
-      unless is_prime_now == '1' then
-        stored_item = Item.find_by(asin: item['asin'])
-        return stored_item.is_prime.to_s == '1' ? false : true
-      end
-      true
+  def _validate_item_status_of_is_prime(asin, is_prime_now)
+    unless is_prime_now == '1' then
+      stored_item = Item.find_by(asin: asin)
+      return stored_item.is_prime.to_s == '1' ? false : true
+    end
+    true
   end
 
   def validate_item_stock(item)
     _validate_item_availability(item['availability']) && _validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
+  end
+
+  def fetch_asins_by_label(label_id)
+    asins = []
+    Item.joins(:search_condition).where(search_conditions: {label_id: label_id}).each do |item|
+      asins.push(item.asin)
+    end
+    return asins
   end
 
   def delete_items_by_codes(codes)

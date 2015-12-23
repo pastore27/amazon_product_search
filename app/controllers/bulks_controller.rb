@@ -44,14 +44,13 @@ class BulksController < ApplicationController
 
     out_of_stock_codes = []
     labels.each do |label|
-      # 保存済みの商品データを取得
-      # ここでdbからデータを取得し、apiリクエストを送る
-      asins = []
-      Item.joins(:search_condition).where(search_conditions: {label_id: label.id}).each do |item|
-        asins.push(item.asin)
-      end
-
-      out_of_stock_codes.concat(extract_out_of_stock_codes(req_lookup_api(asins, label.id)))
+      out_of_stock_codes.concat(
+        extract_out_of_stock_codes(
+          req_lookup_api(
+            fetch_asins_by_label(label.id), label.id
+          )
+        )
+      )
     end
 
     tmp_zip = Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
