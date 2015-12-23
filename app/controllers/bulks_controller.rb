@@ -54,7 +54,10 @@ class BulksController < ApplicationController
     tmp_zip = generate_tmp_zip_file_name()
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       # csvファイルの追加
-      ar.add_buffer(NKF::nkf('--sjis -Lw', "在庫切れ商品(全ラベル).csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes)))
+      ar.add_buffer(
+        NKF::nkf('--sjis -Lw', "在庫切れ商品(全ラベル).csv"),
+        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+      )
     end
 
     # 在庫なし商品の削除

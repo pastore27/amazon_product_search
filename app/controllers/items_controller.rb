@@ -73,7 +73,10 @@ class ItemsController < ApplicationController
       # csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(
+          NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"),
+          NKF::nkf('--sjis -Lw', csv_str)
+        )
         count += 1
       end
     end
@@ -123,11 +126,17 @@ class ItemsController < ApplicationController
       # 商品一覧csvファイルの追加
       count = 1
       csv_strs.each do |csv_str|
-        ar.add_buffer(NKF::nkf('--sjis -Lw', "商品一覧(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"), NKF::nkf('--sjis -Lw', csv_str))
+        ar.add_buffer(
+          NKF::nkf('--sjis -Lw', "商品一覧(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"),
+          NKF::nkf('--sjis -Lw', csv_str)
+        )
         count += 1
       end
       # 在庫なしcsvファイルの追加
-      ar.add_buffer(NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes)))
+      ar.add_buffer(
+        NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"),
+        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+      )
     end
 
     # 在庫なし商品の削除
@@ -189,13 +198,19 @@ class ItemsController < ApplicationController
       img_data.each do |data|
         # main画像
         if data['main_img'] then
-          ar.add_buffer(NKF::nkf('--sjis -Lw', "#{data[:code]}.jpg"), data['main_img'])
+          ar.add_buffer(
+            NKF::nkf('--sjis -Lw', "#{data[:code]}.jpg"),
+            data['main_img']
+          )
         end
         # sub画像
         if data['sub_img'] then
           count = 1
           data['sub_img'].each do |ele|
-            ar.add_buffer(NKF::nkf('--sjis -Lw', "#{data[:code]}_#{count}.jpg"), ele)
+            ar.add_buffer(
+              NKF::nkf('--sjis -Lw', "#{data[:code]}_#{count}.jpg"),
+              ele
+            )
             count += 1
           end
         end
@@ -217,8 +232,10 @@ class ItemsController < ApplicationController
 
     tmp_zip = generate_tmp_zip_file_name()
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
-      # csvファイルの追加
-      ar.add_buffer(NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"), NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes)))
+      ar.add_buffer(
+        NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"),
+        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+      )
     end
 
     # 在庫なし商品の削除
