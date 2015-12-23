@@ -263,6 +263,12 @@ class ApplicationController < ActionController::Base
     Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
   end
 
+  def send_zip_file(tmp_zip, file_name)
+    send_file(tmp_zip,
+              :type => 'application/zip',
+              :filename => NKF::nkf('--sjis -Lw', file_name))
+  end
+
   def create_csv_str(items, csv_option)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
     # テンプレートファイルを開く

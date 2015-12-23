@@ -60,8 +60,6 @@ class BulksController < ApplicationController
     # 在庫なし商品の削除
     delete_items_by_codes(out_of_stock_codes)
 
-    send_file(tmp_zip,
-              :type => 'application/zip',
-              :filename => NKF::nkf('--sjis -Lw', "在庫切れ商品(全ラベル).zip"))
+    send_zip_file(tmp_zip, "在庫切れ商品(全ラベル).zip")
   end
 end
