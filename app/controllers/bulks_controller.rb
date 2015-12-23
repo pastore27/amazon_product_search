@@ -66,7 +66,7 @@ class BulksController < ApplicationController
         end
       end
 
-      unless is_available_item(fetched_item['availability']) then
+      unless validate_item_availability(fetched_item['availability']) then
         out_of_stock_codes.push(fetched_item['code'])
         next
       end
@@ -79,7 +79,7 @@ class BulksController < ApplicationController
     end
 
     # 在庫なし商品の削除
-    Item.delete_all(code: out_of_stock_codes)
+    delete_items_by_codes(out_of_stock_codes)
 
     send_file(tmp_zip,
               :type => 'application/zip',

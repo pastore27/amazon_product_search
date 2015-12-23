@@ -168,7 +168,7 @@ class ApplicationController < ActionController::Base
       return false unless _check_condition_of_is_prime(item, condition['is_prime'].to_s)
     end
     # 在庫状況でフィルタリング
-    return false unless is_available_item(item['availability'])
+    return false unless validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
@@ -219,8 +219,12 @@ class ApplicationController < ActionController::Base
     return false
   end
 
-  def is_available_item(availability)
+  def validate_item_availability(availability)
     ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(availability)
+  end
+
+  def delete_items_by_codes(codes)
+    Item.delete_all(code: codes)
   end
 
   def create_csv_str(items, csv_option)
