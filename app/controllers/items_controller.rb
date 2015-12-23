@@ -146,11 +146,6 @@ class ItemsController < ApplicationController
           next
         end
       end
-
-      unless ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(fetched_item['availability']) then
-        out_of_stock_codes.push(fetched_item['code'])
-        next
-      end
     end
 
     # csv出力オプション
@@ -284,7 +279,7 @@ class ItemsController < ApplicationController
         end
       end
 
-      unless ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(fetched_item['availability']) then
+      unless is_available_item(fetched_item['availability']) then
         out_of_stock_codes.push(fetched_item['code'])
         next
       end
