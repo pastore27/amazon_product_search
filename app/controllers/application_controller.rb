@@ -168,7 +168,7 @@ class ApplicationController < ActionController::Base
       return false unless _validate_is_prime(item, condition['is_prime'].to_s)
     end
     # 在庫状況でフィルタリング
-    return false unless validate_item_availability(item['availability'])
+    return false unless _validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
@@ -224,7 +224,7 @@ class ApplicationController < ActionController::Base
   end
 
   # プライムだったものが、プライムでなくなった場合、在庫切れとする
-  def _validate_item_status_of_is_prime(asin, is_prime_now)
+  def validate_item_status_of_is_prime(asin, is_prime_now)
     unless is_prime_now == '1' then
       stored_item = Item.find_by(asin: asin)
       return stored_item.is_prime.to_s == '1' ? false : true
@@ -233,7 +233,7 @@ class ApplicationController < ActionController::Base
   end
 
   def validate_item_stock(item)
-    _validate_item_availability(item['availability']) && _validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
+    _validate_item_availability(item['availability']) && validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
   end
 
   def fetch_asins_by_label(label_id)
@@ -261,6 +261,16 @@ class ApplicationController < ActionController::Base
 
   def generate_tmp_zip_file_name()
     Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+  end
+
+  # csv出力オプションの生成
+  def generate_csv_option(params)
+    csv_option = {
+      'path'               => params['path'],
+      'explanation'        => params['explanation'],
+      'price_option_unit'  => params['price_option_unit'],
+      'price_option_value' => params['price_option_value'].to_f,
+    }
   end
 
   def send_zip_file(tmp_zip, file_name)

@@ -62,18 +62,10 @@ class ItemsController < ApplicationController
       end
     end
 
-    # csv出力オプション
-    csv_option = {
-      'path'               => params['path'],
-      'explanation'        => params['explanation'],
-      'price_option_unit'  => params['price_option_unit'],
-      'price_option_value' => params['price_option_value'].to_f,
-    }
-
     # csv出力
     csv_strs = []
     csv_items.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, csv_option)) if ele
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
     end
 
     tmp_zip = generate_tmp_zip_file_name()
@@ -95,18 +87,11 @@ class ItemsController < ApplicationController
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
     # csv出力するデータを選定
-    csv_items_in_stock     = []
-    csv_items_out_of_stock = []
-
-    # 保存済みの商品データを取得
-    # ここでdbからデータを取得し、apiリクエストを送る
-    asins = []
-    Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).each do |item|
-      asins.push(item.asin)
-    end
+    csv_items_in_stock = []
+    out_of_stock_codes = []
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api_with_check_stock(asins, label_id) # codeを生成するために、label_idを渡す必要がある
+    stored_items = req_lookup_api_with_check_stock(fetch_asins_by_label(label_id), label_id) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
       csv_items_in_stock.push({
                        'asin'         => stored_item['asin'],
@@ -120,44 +105,17 @@ class ItemsController < ApplicationController
                        'sub_img_urls' => stored_item['sub_img_urls']
                      })
     end
-    stored_items[:out_of_stock_items].each do |stored_item|
-      csv_items_out_of_stock.push({
-                       'asin'         => stored_item['asin'],
-                       'code'         => stored_item['code'],
-                       'jan'          => stored_item['jan'],
-                       'title'        => stored_item['title'],
-                       'price'        => stored_item['price'].to_i,
-                       'headline'     => stored_item['headline'],
-                       'features'     => stored_item['features'],
-                       'main_img_url' => stored_item['main_img_url'],
-                       'sub_img_urls' => stored_item['sub_img_urls']
-                     })
-    end
-
-    out_of_stock_codes = []
-    csv_items_out_of_stock.each do |fetched_item|
-      # プライムだったものが、プライムでなくなった場合、在庫切れとする
-      unless fetched_item['is_prime'].to_s == '1' then
-        stored_item = Item.find_by(asin: fetched_item['asin'])
-        if stored_item.is_prime.to_s == '1' then
-          out_of_stock_codes.push(fetched_item['code'])
-          next
-        end
+    stored_items[:out_of_stock_items].each do |item|
+      unless validate_item_status_of_is_prime(item['asin'], item['is_prime']) then
+        out_of_stock_codes.push(item['code'])
+        next
       end
     end
-
-    # csv出力オプション
-    csv_option = {
-      'path'               => params['path'],
-      'explanation'        => params['explanation'],
-      'price_option_unit'  => params['price_option_unit'],
-      'price_option_value' => params['price_option_value'].to_f,
-    }
 
     # csv出力
     csv_strs = []
     csv_items_in_stock.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, csv_option)) if ele
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
     end
 
     tmp_zip = generate_tmp_zip_file_name()
