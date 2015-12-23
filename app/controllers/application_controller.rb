@@ -219,8 +219,21 @@ class ApplicationController < ActionController::Base
     return false
   end
 
-  def validate_item_availability(availability)
+  def _validate_item_availability(availability)
     ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(availability)
+  end
+
+  # プライムだったものが、プライムでなくなった場合、在庫切れとする
+  def _validate_item_status_of_is_prime(item, is_prime_now)
+      unless is_prime_now == '1' then
+        stored_item = Item.find_by(asin: item['asin'])
+        return stored_item.is_prime.to_s == '1' ? false : true
+      end
+      true
+  end
+
+  def validate_item_stock(item)
+    _validate_item_availability(item['availability']) && _validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
   end
 
   def delete_items_by_codes(codes)

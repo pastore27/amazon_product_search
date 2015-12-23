@@ -270,16 +270,7 @@ class ItemsController < ApplicationController
 
     out_of_stock_codes = []
     fetched_items.each do |fetched_item|
-      # プライムだったものが、プライムでなくなった場合、在庫切れとする
-      unless fetched_item['is_prime'].to_s == '1' then
-        stored_item = Item.find_by(asin: fetched_item['asin'])
-        if stored_item.is_prime.to_s == '1' then
-          out_of_stock_codes.push(fetched_item['code'])
-          next
-        end
-      end
-
-      unless validate_item_availability(fetched_item['availability']) then
+      unless validate_item_stock(fetched_item) then
         out_of_stock_codes.push(fetched_item['code'])
         next
       end
