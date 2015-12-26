@@ -109,7 +109,7 @@ class ItemsController < ApplicationController
                      })
     end
     stored_items[:out_of_stock_items].each do |item|
-      unless validate_item_status_of_is_prime(item['asin'], item['is_prime']) && !include_prohibited_word(item) then
+      unless validate_item_status_of_is_prime(item['asin'], item['is_prime']) then
         out_of_stock_codes.push(item['code'])
         next
       end

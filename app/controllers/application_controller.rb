@@ -36,11 +36,12 @@ class ApplicationController < ActionController::Base
     end
 
     ret_items = []
+    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
     res.items.each do |item|
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition['is_prime'].to_s)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words)
       ret_items.push(insert_item)
     end
 
@@ -95,6 +96,7 @@ class ApplicationController < ActionController::Base
   def req_lookup_api_with_check_stock(asins, label_id)
     in_stock_items     = []
     out_of_stock_items = []
+    prohibited_words   = ProhibitedWord.where(user_id: current_user.id)
 
     # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
     asins.each_slice(10).to_a.each do |ele|
@@ -118,7 +120,7 @@ class ApplicationController < ActionController::Base
         insert_item = _format_item(item)
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
-        _validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
+        _validate_item(insert_item, nil, prohibited_words) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
       end
     end
 
@@ -147,12 +149,13 @@ class ApplicationController < ActionController::Base
       end
     end
 
-    variation_items = []
+    variation_items  = []
+    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
     res.items.each do |item|
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition['is_prime'].to_s)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words)
       variation_items.push(insert_item)
     end
 
@@ -162,7 +165,7 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def _validate_item(item, specified_is_prime)
+  def _validate_item(item, specified_is_prime, prohibited_words)
     # プライム指定でフィルタリング
     return false  if (specified_is_prime == '1') && !_is_prime(item['is_prime'].to_s)
     # 在庫状況でフィルタリング
@@ -170,13 +173,12 @@ class ApplicationController < ActionController::Base
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
-    return false if include_prohibited_word(item)
+    return false if _include_prohibited_word(item, prohibited_words)
 
     return true
   end
 
-  def include_prohibited_word(item)
-    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
+  def _include_prohibited_word(item, prohibited_words)
     prohibited_words.each do |prohibited_word|
       return true if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
     end
