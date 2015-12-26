@@ -92,10 +92,10 @@ class ApplicationController < ActionController::Base
     return ret_items
   end
 
-  # 在庫チェックも行う
-  def req_lookup_api_with_check_stock(asins, label_id)
+  # 商品チェックも行う
+  def req_lookup_api_with_item_check(asins, label_id)
     in_stock_items     = []
-    out_of_stock_items = []
+    invalid_items = []
     prohibited_words   = ProhibitedWord.where(user_id: current_user.id)
 
     # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
@@ -120,13 +120,13 @@ class ApplicationController < ActionController::Base
         insert_item = _format_item(item)
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
-        _validate_item(insert_item, nil, prohibited_words) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
+        _validate_item(insert_item, nil, prohibited_words) ? in_stock_items.push(insert_item) : invalid_items.push(insert_item)
       end
     end
 
     return {
-      :in_stock_items     => in_stock_items,
-      :out_of_stock_items => out_of_stock_items
+      :in_stock_items => in_stock_items,
+      :invalid_items  => invalid_items
     }
   end
 
@@ -248,14 +248,14 @@ class ApplicationController < ActionController::Base
     Item.delete_all(code: codes)
   end
 
-  def extract_out_of_stock_codes(items, prohibited_words)
-    out_of_stock_codes = []
+  def extract_invalid_item_codes(items, prohibited_words)
+    invalid_item_codes = []
     items.each do |item|
       next unless _validate_item_stock(item)
       next unless _include_prohibited_word(item, prohibited_words)
-      out_of_stock_codes.push(item['code'])
+      invalid_item_codes.push(item['code'])
     end
-    return out_of_stock_codes
+    return invalid_item_codes
   end
 
   def generate_tmp_zip_file_name()

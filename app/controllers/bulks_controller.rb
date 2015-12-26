@@ -40,10 +40,10 @@ class BulksController < ApplicationController
 
   def check_stock
     labels = Label.where(user_id: current_user.id)
-    out_of_stock_codes = []
+    invalid_item_codes = []
     labels.each do |label|
-      out_of_stock_codes.concat(
-        extract_out_of_stock_codes(
+      invalid_item_codes.concat(
+        extract_invalid_item_codes(
           req_lookup_api(
             fetch_asins_by_label(label.id), label.id
           )
@@ -55,14 +55,14 @@ class BulksController < ApplicationController
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       # csvファイルの追加
       ar.add_buffer(
-        NKF::nkf('--sjis -Lw', "在庫切れ商品(全ラベル).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+        NKF::nkf('--sjis -Lw', "不正商品(全ラベル).csv"),
+        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(invalid_item_codes))
       )
     end
 
     # 在庫なし商品の削除
-    delete_items_by_codes(out_of_stock_codes)
+    delete_items_by_codes(invalid_item_codes)
 
-    send_zip_file(tmp_zip, "在庫切れ商品(全ラベル).zip")
+    send_zip_file(tmp_zip, "不正商品(全ラベル).zip")
   end
 end
