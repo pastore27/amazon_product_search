@@ -96,6 +96,9 @@ class ItemsController < ApplicationController
     # item_lookup APIを叩く
     stored_items = req_lookup_api_with_item_check(fetch_asins_by_label(label_id), label_id) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
+      # プライムだったものが、プライムでなくなった場合、不正商品とする
+      invalid_item_codes.push(stored_item['code']) unless validate_item_status_of_is_prime(stored_item['asin'], stored_item['is_prime'])
+
       csv_items_in_stock.push({
                        'asin'         => stored_item['asin'],
                        'code'         => stored_item['code'],
@@ -109,7 +112,6 @@ class ItemsController < ApplicationController
                      })
     end
     stored_items[:invalid_items].each do |item|
-      next if validate_item_status_of_is_prime(item['asin'], item['is_prime'])
       invalid_item_codes.push(item['code'])
     end
 

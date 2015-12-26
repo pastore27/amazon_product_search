@@ -223,7 +223,7 @@ class ApplicationController < ActionController::Base
     ["在庫あり。","通常1～2営業日以内に発送","通常1～3営業日以内に発送","通常2～3営業日以内に発送"].include?(availability)
   end
 
-  # プライムだったものが、プライムでなくなった場合、在庫切れとする
+  # プライムだったものが、プライムでなくなった場合、不正商品とする
   def validate_item_status_of_is_prime(asin, is_prime_now)
     unless is_prime_now == '1' then
       stored_item = Item.find_by(asin: asin)
