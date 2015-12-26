@@ -170,12 +170,17 @@ class ApplicationController < ActionController::Base
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
-    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
-    prohibited_words.each do |prohibited_word|
-      return false if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
-    end
+    return false if include_prohibited_word(item)
 
     return true
+  end
+
+  def include_prohibited_word(item)
+    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
+    prohibited_words.each do |prohibited_word|
+      return true if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
+    end
+    return false
   end
 
   def _format_item(item)
