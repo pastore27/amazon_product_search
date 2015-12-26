@@ -55,8 +55,11 @@
   <%= submit_tag '上記検索条件を一括登録', :class => "btn btn-primary" %>
 <% end %>
 
-<h3>一括で商品の在庫を確認する</h3>
-<pre>全ラベルのすべての商品の在庫を確認します。在庫がなくなった商品code一覧をCSV出力します。また、在庫がなくなった商品は削除します。</pre>
+<h3>一括で不正商品を確認する</h3>
+<pre>
+  全ラベルのすべての商品の "在庫チェック", "禁止ワードチェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
+  また、これらの不正商品は削除されます。
+</pre>
 <%= form_tag("/bulks/#{current_user.id}/check_items", method: :post) do %>
-  <%= submit_tag '在庫がない商品のcode一覧をCSVダウンロード & 在庫がない商品を削除', :class => "btn btn-danger" %>
+  <%= submit_tag '不正商品code一覧のCSVダウンロード & 不正商品の削除', :class => "btn btn-danger" %>
 <% end %>
