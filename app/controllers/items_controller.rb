@@ -132,8 +132,8 @@ class ItemsController < ApplicationController
       end
       # 不正商品csvファイルの追加
       ar.add_buffer(
-        NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
 
@@ -233,7 +233,7 @@ class ItemsController < ApplicationController
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       ar.add_buffer(
         NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
 

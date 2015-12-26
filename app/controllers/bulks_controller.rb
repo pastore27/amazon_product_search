@@ -56,7 +56,7 @@ class BulksController < ApplicationController
       # csvファイルの追加
       ar.add_buffer(
         NKF::nkf('--sjis -Lw', "不正商品(全ラベル).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
 

@@ -311,7 +311,7 @@ class ApplicationController < ActionController::Base
     return csv_str
   end
 
-  def create_out_stock_csv_str(codes)
+  def create_invalid_items_csv_str(codes)
     csv_header = %w/ code /
     csv_str = CSV.generate do |csv|
       # header の追加
