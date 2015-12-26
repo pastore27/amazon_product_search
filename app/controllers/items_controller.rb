@@ -225,7 +225,8 @@ class ItemsController < ApplicationController
     out_of_stock_codes = extract_out_of_stock_codes(
                            req_lookup_api(
                              fetch_asins_by_label(label_id), label_id
-                           )
+                           ),
+                           ProhibitedWord.where(user_id: current_user.id)
                          )
 
     tmp_zip = generate_tmp_zip_file_name()

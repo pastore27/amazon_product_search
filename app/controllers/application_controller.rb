@@ -232,7 +232,7 @@ class ApplicationController < ActionController::Base
     true
   end
 
-  def validate_item_stock(item)
+  def _validate_item_stock(item)
     _validate_item_availability(item['availability']) && validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
   end
 
@@ -248,13 +248,12 @@ class ApplicationController < ActionController::Base
     Item.delete_all(code: codes)
   end
 
-  def extract_out_of_stock_codes(items)
+  def extract_out_of_stock_codes(items, prohibited_words)
     out_of_stock_codes = []
     items.each do |item|
-      unless validate_item_stock(item) then
-        out_of_stock_codes.push(item['code'])
-        next
-      end
+      next unless _validate_item_stock(item)
+      next unless _include_prohibited_word(item, prohibited_words)
+      out_of_stock_codes.push(item['code'])
     end
     return out_of_stock_codes
   end
