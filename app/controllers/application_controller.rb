@@ -40,7 +40,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless validate_item(insert_item, condition)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s)
       ret_items.push(insert_item)
     end
 
@@ -118,7 +118,7 @@ class ApplicationController < ActionController::Base
         insert_item = _format_item(item)
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
-        validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
+        _validate_item(insert_item, nil) ? in_stock_items.push(insert_item) : out_of_stock_items.push(insert_item)
       end
     end
 
@@ -152,7 +152,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless validate_item(insert_item, condition)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s)
       variation_items.push(insert_item)
     end
 
@@ -162,13 +162,11 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def validate_item(item, condition)
+  def _validate_item(item, specified_is_prime)
     # プライム指定でフィルタリング
-    if condition then
-      return false unless _validate_is_prime(item, condition['is_prime'].to_s)
-    end
+    return false  if (specified_is_prime == '1') && !_is_prime(item['is_prime'].to_s)
     # 在庫状況でフィルタリング
-    return false unless validate_item_availability(item['availability'])
+    return false unless _validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
     # 禁止ワードがあれば、取得しない
@@ -210,13 +208,8 @@ class ApplicationController < ActionController::Base
     return insert_item
   end
 
-  def _validate_is_prime(item, specified_is_prime)
-    if specified_is_prime == '1' then
-      return true  if item['is_prime'].to_s == '1'
-    else
-      return true
-    end
-    return false
+  def _is_prime(is_prime)
+    is_prime == '1'
   end
 
   def _validate_item_availability(availability)
@@ -224,7 +217,7 @@ class ApplicationController < ActionController::Base
   end
 
   # プライムだったものが、プライムでなくなった場合、在庫切れとする
-  def _validate_item_status_of_is_prime(asin, is_prime_now)
+  def validate_item_status_of_is_prime(asin, is_prime_now)
     unless is_prime_now == '1' then
       stored_item = Item.find_by(asin: asin)
       return stored_item.is_prime.to_s == '1' ? false : true
@@ -233,7 +226,7 @@ class ApplicationController < ActionController::Base
   end
 
   def validate_item_stock(item)
-    _validate_item_availability(item['availability']) && _validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
+    _validate_item_availability(item['availability']) && validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
   end
 
   def fetch_asins_by_label(label_id)
@@ -259,11 +252,30 @@ class ApplicationController < ActionController::Base
     return out_of_stock_codes
   end
 
+  def generate_tmp_zip_file_name()
+    Rails.root.join("tmp/zip/#{Time.now}.zip").to_s
+  end
+
+  # csv出力オプションの生成
+  def generate_csv_option(params)
+    csv_option = {
+      'path'               => params['path'],
+      'explanation'        => params['explanation'],
+      'price_option_unit'  => params['price_option_unit'],
+      'price_option_value' => params['price_option_value'].to_f,
+    }
+  end
+
+  def send_zip_file(tmp_zip, file_name)
+    send_file(tmp_zip,
+              :type => 'application/zip',
+              :filename => NKF::nkf('--sjis -Lw', file_name))
+  end
+
   def create_csv_str(items, csv_option)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
     # テンプレートファイルを開く
     caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
-
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
@@ -277,7 +289,6 @@ class ApplicationController < ActionController::Base
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
         csv_body['explanation'] = csv_option['explanation'] if csv_option['explanation']
-
         # 金額調整
         if (csv_option['price_option_value'])  then
           if (csv_option['price_option_unit'] == 'yen') then
@@ -291,39 +302,31 @@ class ApplicationController < ActionController::Base
         csv << csv_body.values_at(*csv_header)
       end
     end
-
     return csv_str
   end
 
   def create_out_stock_csv_str(codes)
     csv_header = %w/ code /
-
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
       # body の追加
       codes.each do |code|
         csv_body = {}
-
         csv_body['code'] = code
-
         csv << csv_body.values_at(*csv_header)
       end
     end
-
     return csv_str
   end
 
   def generate_code(asin, label_id)
-    code = label_id.to_s + Digest::MD5.hexdigest(asin[0,5])[0,5] + Digest::MD5.hexdigest(asin[5,5])[0,5] # code = label_id + 暗号文字列先頭の10文字
-    return code
+    label_id.to_s + Digest::MD5.hexdigest(asin[0,5])[0,5] + Digest::MD5.hexdigest(asin[5,5])[0,5] # code = label_id + 暗号文字列
   end
 
   # user_idの認証
   def correct_user
-    if params[:user_id]
-      redirect_to(root_path) unless current_user.id.to_s == params[:user_id].to_s
-    end
+    redirect_to(root_path) if params[:user_id] && ( current_user.id.to_s != params[:user_id].to_s )
   end
 
   # adminの認証
