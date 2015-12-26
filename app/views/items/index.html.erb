@@ -75,6 +75,6 @@
 
 <h3>商品の在庫を確認する</h3>
 <pre>このラベルのすべての商品の在庫を確認します。在庫がなくなった商品code一覧をCSV出力します。また、在庫がなくなった商品は削除します。</pre>
-<%= form_tag("/labels/#{current_user.id}/#{@label.id}/check_stock", method: :post) do %>
+<%= form_tag("/labels/#{current_user.id}/#{@label.id}/check_items", method: :post) do %>
   <%= submit_tag '在庫がない商品のcode一覧をCSVダウンロード & 在庫がない商品を削除', :class => "btn btn-danger" %>
 <% end %>

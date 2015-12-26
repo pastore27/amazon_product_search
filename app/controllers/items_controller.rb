@@ -218,7 +218,7 @@ class ItemsController < ApplicationController
     send_zip_file(tmp_zip, "商品画像(#{label.name}).zip")
   end
 
-  def check_stock
+  def check_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:label_id]
     label    = Label.find_by(id: label_id, user_id: current_user.id)

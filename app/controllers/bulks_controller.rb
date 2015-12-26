@@ -38,7 +38,7 @@ class BulksController < ApplicationController
     redirect_to :action => 'index'
   end
 
-  def check_stock
+  def check_items
     labels = Label.where(user_id: current_user.id)
     invalid_item_codes = []
     labels.each do |label|
