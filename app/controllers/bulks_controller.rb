@@ -46,7 +46,8 @@ class BulksController < ApplicationController
         extract_invalid_item_codes(
           req_lookup_api(
             fetch_asins_by_label(label.id), label.id
-          )
+          ),
+          ProhibitedWord.where(user_id: current_user.id)
         )
       )
     end
@@ -60,7 +61,7 @@ class BulksController < ApplicationController
       )
     end
 
-    # 在庫なし商品の削除
+    # 不正商品の削除
     delete_items_by_codes(invalid_item_codes)
 
     send_zip_file(tmp_zip, "不正商品(全ラベル).zip")

@@ -251,8 +251,7 @@ class ApplicationController < ActionController::Base
   def extract_invalid_item_codes(items, prohibited_words)
     invalid_item_codes = []
     items.each do |item|
-      next unless _validate_item_stock(item)
-      next unless _include_prohibited_word(item, prohibited_words)
+      next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words)
       invalid_item_codes.push(item['code'])
     end
     return invalid_item_codes

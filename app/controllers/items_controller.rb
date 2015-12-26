@@ -109,7 +109,7 @@ class ItemsController < ApplicationController
                      })
     end
     stored_items[:invalid_items].each do |item|
-      next unless validate_item_status_of_is_prime(item['asin'], item['is_prime'])
+      next if validate_item_status_of_is_prime(item['asin'], item['is_prime'])
       invalid_item_codes.push(item['code'])
     end
 
