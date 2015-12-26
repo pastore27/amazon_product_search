@@ -36,7 +36,10 @@
 <hr>
 
 <h3>商品一覧をCSVダウンロードする</h3>
-<pre>このラベルのすべての商品をCSV出力します。CSV出力する際のオプションを以下で設定してください。ダウンロードには、"商品数/600" 分程度かかります。</pre>
+<pre>
+  このラベルのすべての商品をCSV出力します。CSV出力する際のオプションを以下で設定してください。ダウンロードには、"商品数/600" 分程度かかります。
+  商品一覧ダウンロードの前に、不正商品(在庫がない商品、禁止ワードに引っかかっている商品)の削除が行われます。削除された商品もcsvにて出力されます。
+</pre>
 
 <%= form_tag("/labels/#{current_user.id}/#{@label.id}/download_items", method: :post) do %>
   <h4>オプション</h4>
@@ -73,8 +76,11 @@
 
 <hr>
 
-<h3>商品の在庫を確認する</h3>
-<pre>このラベルのすべての商品の在庫を確認します。在庫がなくなった商品code一覧をCSV出力します。また、在庫がなくなった商品は削除します。</pre>
-<%= form_tag("/labels/#{current_user.id}/#{@label.id}/check_stock", method: :post) do %>
-  <%= submit_tag '在庫がない商品のcode一覧をCSVダウンロード & 在庫がない商品を削除', :class => "btn btn-danger" %>
+<h3>不正商品を確認する</h3>
+<pre>
+  このラベルのすべての商品の  "在庫チェック", "禁止ワードチェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
+  また、これらの不正商品は削除されます。
+</pre>
+<%= form_tag("/labels/#{current_user.id}/#{@label.id}/check_items", method: :post) do %>
+  <%= submit_tag '不正商品code一覧のCSVダウンロード & 不正商品の削除', :class => "btn btn-danger" %>
 <% end %>

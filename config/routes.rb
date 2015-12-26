@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   post "/labels/:user_id/:label_id/add_items"             => "items#add_items"
   post "/labels/:user_id/:label_id/download_items"        => "items#download_items"
   post "/labels/:user_id/:label_id/:page/download_imgs"   => "items#download_imgs"
-  post "/labels/:user_id/:label_id/check_stock"           => "items#check_stock"
+  post "/labels/:user_id/:label_id/check_items"           => "items#check_items"
   get  "/labels/:user_id/:label_id/items/:item_id/delete" => "items#delete"
 
   get  "/prohibited_words"            => "prohibited_words#index"
@@ -36,7 +36,7 @@ Rails.application.routes.draw do
 
   get  "/bulks"                                => "bulks#index"
   post "/bulks/:user_id/add_search_conditions" => "bulks#add_search_conditions"
-  post "/bulks/:user_id/check_stock"           => "bulks#check_stock"
+  post "/bulks/:user_id/check_items"           => "bulks#check_items"
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

@@ -91,11 +91,17 @@ class ItemsController < ApplicationController
 
     # csv出力するデータを選定
     csv_items_in_stock = []
-    out_of_stock_codes = []
+    invalid_item_codes = []
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api_with_check_stock(fetch_asins_by_label(label_id), label_id) # codeを生成するために、label_idを渡す必要がある
+    stored_items = req_lookup_api_with_item_check(fetch_asins_by_label(label_id), label_id) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
+      # プライムだったものが、プライムでなくなった場合、不正商品とする
+      unless validate_item_status_of_is_prime(stored_item['asin'], stored_item['is_prime']) then
+        invalid_item_codes.push(stored_item['code'])
+        next
+      end
+
       csv_items_in_stock.push({
                        'asin'         => stored_item['asin'],
                        'code'         => stored_item['code'],
@@ -108,9 +114,8 @@ class ItemsController < ApplicationController
                        'sub_img_urls' => stored_item['sub_img_urls']
                      })
     end
-    stored_items[:out_of_stock_items].each do |item|
-      next unless validate_item_status_of_is_prime(item['asin'], item['is_prime'])
-      out_of_stock_codes.push(item['code'])
+    stored_items[:invalid_items].each do |item|
+      invalid_item_codes.push(item['code'])
     end
 
     # csv出力
@@ -130,15 +135,15 @@ class ItemsController < ApplicationController
         )
         count += 1
       end
-      # 在庫なしcsvファイルの追加
+      # 不正商品csvファイルの追加
       ar.add_buffer(
-        NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+        NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
 
-    # 在庫なし商品の削除
-    delete_items_by_codes(out_of_stock_codes)
+    # 不正商品の削除
+    delete_items_by_codes(invalid_item_codes)
 
     send_zip_file(tmp_zip, "商品一覧(#{label.name}).zip")
   end
@@ -218,28 +223,29 @@ class ItemsController < ApplicationController
     send_zip_file(tmp_zip, "商品画像(#{label.name}).zip")
   end
 
-  def check_stock
+  def check_items
     # ラベルに紐づく検索条件を取得
     label_id = params[:label_id]
     label    = Label.find_by(id: label_id, user_id: current_user.id)
-    out_of_stock_codes = extract_out_of_stock_codes(
+    invalid_item_codes = extract_invalid_item_codes(
                            req_lookup_api(
                              fetch_asins_by_label(label_id), label_id
-                           )
+                           ),
+                           ProhibitedWord.where(user_id: current_user.id)
                          )
 
     tmp_zip = generate_tmp_zip_file_name()
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       ar.add_buffer(
-        NKF::nkf('--sjis -Lw', "在庫切れ商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_out_stock_csv_str(out_of_stock_codes))
+        NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
 
-    # 在庫なし商品の削除
-    delete_items_by_codes(out_of_stock_codes)
+    # 不正商品の削除
+    delete_items_by_codes(invalid_item_codes)
 
-    send_zip_file(tmp_zip, "在庫切れ商品(#{label.name}).zip")
+    send_zip_file(tmp_zip, "不正商品(#{label.name}).zip")
   end
 
   def delete
