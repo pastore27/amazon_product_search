@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
         sleep(5)
         retry
       else
-        return false
+        return []
       end
     end
 
@@ -77,7 +77,7 @@ class ApplicationController < ActionController::Base
           sleep(5)
           retry
         else
-          return false
+          next
         end
       end
 
@@ -112,7 +112,7 @@ class ApplicationController < ActionController::Base
           sleep(5)
           retry
         else
-          return false
+          next
         end
       end
 
@@ -145,7 +145,7 @@ class ApplicationController < ActionController::Base
         sleep(5)
         retry
       else
-        return false
+        return []
       end
     end
 
