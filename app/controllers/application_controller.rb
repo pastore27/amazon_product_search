@@ -28,7 +28,7 @@ class ApplicationController < ActionController::Base
     rescue
       retry_count += 1
       if retry_count < 5
-        sleep(5)
+        sleep(3)
         retry
       else
         return []
@@ -74,7 +74,7 @@ class ApplicationController < ActionController::Base
       rescue
         retry_count += 1
         if retry_count < 5
-          sleep(5)
+          sleep(3)
           retry
         else
           next
@@ -109,7 +109,7 @@ class ApplicationController < ActionController::Base
       rescue
         retry_count += 1
         if retry_count < 5
-          sleep(5)
+          sleep(3)
           retry
         else
           next
@@ -142,7 +142,7 @@ class ApplicationController < ActionController::Base
     rescue
       retry_count += 1
       if retry_count < 5
-        sleep(5)
+        sleep(3)
         retry
       else
         return []
