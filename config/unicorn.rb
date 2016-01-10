@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 worker_processes Integer(ENV["WEB_CONCURRENCY"] || 3)
-timeout 600
+timeout 36000
 preload_app true  # 更新時ダウンタイム無し
 
 listen "/tmp/unicorn.sock"
