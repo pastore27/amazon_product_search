@@ -1,0 +1,15 @@
+<%= form_tag("/accounts/#{current_user.id}/update", method: :post) do %>
+  <div class="form-group">
+    <label>Access Key ID</label>
+    <input name="aws_access_key_id" class="form-control" value="<%= current_user.aws_access_key_id %>">
+  </div>
+  <div class="form-group">
+    <label>Secret Access Key</label>
+    <input name="aws_secret_key" class="form-control" value="<%= current_user.aws_secret_key %>">
+  </div>
+  <div class="form-group">
+    <label>AmazonアソシエイトトラッキングID(末尾が-22のID)</label>
+    <input name="associate_tag" class="form-control" value="<%= current_user.associate_tag %>">
+  </div>
+  <%= submit_tag '更新', :class => "btn btn-primary" %>
+<% end %>

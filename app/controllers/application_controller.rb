@@ -1,10 +1,22 @@
 # coding: utf-8
+require_dependency 'amazon/ecs'
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  def aws_api_init
+    Amazon::Ecs.options = {
+      :AWS_access_key_id => current_user.aws_access_key_id,
+      :AWS_secret_key    => current_user.aws_secret_key,
+      :associate_tag     => current_user.associate_tag
+    }
+  end
+
   def req_search_api(condition, page)
+    aws_api_init()
+
     search_word    = ''
     keyword        = condition['keyword']
     negative_match = condition['negative_match']
@@ -61,6 +73,8 @@ class ApplicationController < ActionController::Base
   # asinsの配列から商品情報を取得する
   # codeを生成するために、label_idを渡してもらう必要がある
   def req_lookup_api(asins, label_id)
+    aws_api_init()
+
     ret_items = []
 
     # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
@@ -94,6 +108,8 @@ class ApplicationController < ActionController::Base
 
   # 商品チェックも行う
   def req_lookup_api_with_item_check(asins, label_id)
+    aws_api_init()
+
     in_stock_items     = []
     invalid_items = []
     prohibited_words   = ProhibitedWord.where(user_id: current_user.id)
@@ -133,6 +149,8 @@ class ApplicationController < ActionController::Base
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
   def _get_variation_items(parent_asins, condition)
+    aws_api_init()
+
     retry_count = 0
     begin
       res = Amazon::Ecs.item_lookup(parent_asins.join(','),

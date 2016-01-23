@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151130114817) do
+ActiveRecord::Schema.define(version: 20160123171042) do
 
   create_table "items", force: true do |t|
     t.integer  "user_id",             null: false
@@ -69,6 +69,9 @@ ActiveRecord::Schema.define(version: 20151130114817) do
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
     t.string   "memo"
+    t.string   "aws_access_key_id"
+    t.string   "aws_secret_key"
+    t.string   "associate_tag"
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
   end
