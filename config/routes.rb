@@ -38,6 +38,10 @@ Rails.application.routes.draw do
   post "/bulks/:user_id/add_search_conditions" => "bulks#add_search_conditions"
   post "/bulks/:user_id/check_items"           => "bulks#check_items"
 
+  get  "/accounts"                 => "accounts#index"
+  get  "/accounts/:user_id/update" => "accounts#update_form"
+  post "/accounts/:user_id/update" => "accounts#update"
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

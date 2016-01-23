@@ -1,0 +1,22 @@
+<h3>アカウント</h3>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Access Key ID</th>
+      <th>Secret Access Key</th>
+      <th>AmazonアソシエイトトラッキングID(末尾が-22のID)</th>
+      <th>編集</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><%= current_user.aws_access_key_id %></td>
+      <td><%= current_user.aws_secret_key %></td>
+      <td><%= current_user.associate_tag %></td>
+      <td>
+        <a href="/accounts/<%= current_user.id %>/update">編集</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
