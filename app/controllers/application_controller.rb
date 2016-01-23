@@ -1,8 +1,16 @@
 # coding: utf-8
+require_dependency 'amazon/ecs'
+
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
+
+  Amazon::Ecs.options = {
+    :AWS_access_key_id => ENV["AWS_ACCESS_KEY_ID"],
+    :AWS_secret_key    => ENV["AWS_SECRET_KEY"],
+    :associate_tag     => ENV["ASSOCIATE_TAG"]
+  }
 
   def req_search_api(condition, page)
     search_word    = ''

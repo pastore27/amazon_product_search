@@ -2,7 +2,6 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
-require 'amazon/ecs'
 require 'csv'
 require 'nkf'
 require 'zipruby'
@@ -25,14 +24,6 @@ module AmazonProductSearch
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
-
-    Amazon::Ecs.options = {
-      :AWS_access_key_id => ENV["AWS_ACCESS_KEY_ID"],
-      :AWS_secret_key    => ENV["AWS_SECRET_KEY"],
-      :associate_tag     => ENV["ASSOCIATE_TAG"]
-    }
-    # for debug
-    # Amazon::Ecs.debug = true
 
     # deviseの言語設定
     config.i18n.default_locale = :ja
