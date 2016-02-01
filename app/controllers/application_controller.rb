@@ -190,6 +190,8 @@ class ApplicationController < ActionController::Base
     return false unless _validate_item_availability(item['availability'])
     # 金額が取れていなければ、取得しない
     return false if item['price'].to_s == '0'
+    # アダルト商品であれば、取得しない
+    return false if item['is_adult'].to_s == '1'
     # 禁止ワードがあれば、取得しない
     return false if _include_prohibited_word(item, prohibited_words)
 
@@ -225,6 +227,7 @@ class ApplicationController < ActionController::Base
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
       'is_prime'     => is_prime,
+      'is_adult'     => item_attributes ? item_attributes.get('IsAdultProduct') : 0,
       'availability' => availability,
       'main_img_url' => main_img_url,
       'sub_img_urls' => sub_img_urls
