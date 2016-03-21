@@ -142,9 +142,6 @@ class ItemsController < ApplicationController
       )
     end
 
-    # 不正商品の削除
-    delete_items_by_codes(invalid_item_codes)
-
     send_zip_file(tmp_zip, "商品一覧(#{label.name}).zip")
   end
 
@@ -241,9 +238,6 @@ class ItemsController < ApplicationController
         NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
       )
     end
-
-    # 不正商品の削除
-    delete_items_by_codes(invalid_item_codes)
 
     send_zip_file(tmp_zip, "不正商品(#{label.name}).zip")
   end

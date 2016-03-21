@@ -61,9 +61,6 @@ class BulksController < ApplicationController
       )
     end
 
-    # 不正商品の削除
-    delete_items_by_codes(invalid_item_codes)
-
     send_zip_file(tmp_zip, "不正商品(全ラベル).zip")
   end
 end
