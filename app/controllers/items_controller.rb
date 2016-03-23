@@ -249,4 +249,19 @@ class ItemsController < ApplicationController
     redirect_to :action => 'index'
   end
 
+  def delete_items
+    path = params[:csv_file].tempfile.path
+    open(path, 'r:cp932:utf-8', undef: :replace) do |f|
+      csv = CSV.new(f, :headers => :first_row)
+      csv.each do |row|
+        next if row.header_row?
+        code = row.fields
+        item = Item.find_by(user_id: current_user.id, code: code)
+        item.destroy if item.present?
+      end
+    end
+
+    redirect_to :action => 'index'
+  end
+
 end
