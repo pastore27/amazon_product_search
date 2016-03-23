@@ -61,9 +61,24 @@ class BulksController < ApplicationController
       )
     end
 
-    # 不正商品の削除
-    delete_items_by_codes(invalid_item_codes)
-
     send_zip_file(tmp_zip, "不正商品(全ラベル).zip")
   end
+
+  def delete_items
+    if params[:csv_file]
+      path = params[:csv_file].tempfile.path
+      open(path, 'r:cp932:utf-8', undef: :replace) do |f|
+        csv = CSV.new(f, :headers => :first_row)
+        csv.each do |row|
+          next if row.header_row?
+          code = row.fields
+          item = Item.find_by(user_id: current_user.id, code: code)
+          item.destroy if item.present?
+        end
+      end
+    end
+
+    redirect_to :action => 'index'
+  end
+
 end

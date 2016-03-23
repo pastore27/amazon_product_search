@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   post "/labels/:user_id/:label_id/:page/download_imgs"   => "items#download_imgs"
   post "/labels/:user_id/:label_id/check_items"           => "items#check_items"
   get  "/labels/:user_id/:label_id/items/:item_id/delete" => "items#delete"
+  post "/labels/:user_id/:label_id/delete_items"          => "items#delete_items"
 
   get  "/prohibited_words"            => "prohibited_words#index"
   get  "/prohibited_words/new"        => "prohibited_words#create_form"
@@ -37,6 +38,7 @@ Rails.application.routes.draw do
   get  "/bulks"                                => "bulks#index"
   post "/bulks/:user_id/add_search_conditions" => "bulks#add_search_conditions"
   post "/bulks/:user_id/check_items"           => "bulks#check_items"
+  post "/bulks/:user_id/delete_items"          => "bulks#delete_items"
 
   get  "/accounts"                 => "accounts#index"
   get  "/accounts/:user_id/update" => "accounts#update_form"
