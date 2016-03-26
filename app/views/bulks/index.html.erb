@@ -57,9 +57,16 @@
 
 <h3>一括で不正商品を確認する</h3>
 <pre>
-  全ラベルのすべての商品の "在庫チェック", "禁止ワードチェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
+  全ラベルのすべての商品の "在庫チェック", "禁止ワードチェック", "新品商品の出品者数チェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
 </pre>
 <%= form_tag("/bulks/#{current_user.id}/check_items", method: :post) do %>
+
+<h4>商品チェックオプション</h4>
+  <div class="form-group">
+    <label>新品商品の出品者数</label>
+    <input style="width:150px;" name="min_offer_count" class="form-control">より出品者数が少ない場合、不正商品とみなします。
+  </div>
+
   <%= submit_tag '不正商品code一覧のCSVダウンロード', :class => "btn btn-danger" %>
 <% end %>
 

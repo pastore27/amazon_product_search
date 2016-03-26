@@ -38,11 +38,11 @@
 <h3>商品一覧をCSVダウンロードする</h3>
 <pre>
   このラベルのすべての商品をCSV出力します。CSV出力する際のオプションを以下で設定してください。ダウンロードには、"商品数/600" 分程度かかります。
-  不正商品(在庫がない商品、禁止ワードに引っかかっている商品)は上記CSVには含まれず、不正商品(ラベル名).csvとして出力されます。
+  不正商品(在庫がない商品、禁止ワードに引っかかっている商品、新品商品の出品者数が条件を満たさない商品)は上記CSVには含まれず、不正商品(ラベル名).csvとして出力されます。
 </pre>
 
 <%= form_tag("/labels/#{current_user.id}/#{@label.id}/download_items", method: :post) do %>
-  <h4>オプション</h4>
+  <h4>CSVオプション</h4>
 
   <div class="form-group">
     <label>path 指定</label>
@@ -71,6 +71,12 @@
     <input name="explanation" class="form-control">
   </div>
 
+  <h4>商品チェックオプション</h4>
+  <div class="form-group">
+    <label>新品商品の出品者数</label>
+    <input style="width:150px;" name="min_offer_count" class="form-control">より出品者数が少ない場合、不正商品とみなします。
+  </div>
+
   <%= submit_tag 'このラベルのすべての商品をCSVダウンロード', :class => "btn btn-primary" %>
 <% end %>
 
@@ -78,9 +84,16 @@
 
 <h3>不正商品を確認する</h3>
 <pre>
-  このラベルのすべての商品の  "在庫チェック", "禁止ワードチェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
+  このラベルのすべての商品の  "在庫チェック", "禁止ワードチェック", "新品商品の出品者数チェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
 </pre>
 <%= form_tag("/labels/#{current_user.id}/#{@label.id}/check_items", method: :post) do %>
+
+<h4>商品チェックオプション</h4>
+  <div class="form-group">
+    <label>新品商品の出品者数</label>
+    <input style="width:150px;" name="min_offer_count" class="form-control">より出品者数が少ない場合、不正商品とみなします。
+  </div>
+
   <%= submit_tag '不正商品code一覧のCSVダウンロード', :class => "btn btn-danger" %>
 <% end %>
 

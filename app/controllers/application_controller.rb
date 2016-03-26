@@ -107,7 +107,7 @@ class ApplicationController < ActionController::Base
   end
 
   # 商品チェックも行う
-  def req_lookup_api_with_item_check(asins, label_id)
+  def req_lookup_api_with_item_check(asins, label_id, min_offer_count)
     aws_api_init()
 
     in_stock_items     = []
@@ -136,7 +136,7 @@ class ApplicationController < ActionController::Base
         insert_item = _format_item(item)
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
-        _validate_item(insert_item, nil, prohibited_words) ? in_stock_items.push(insert_item) : invalid_items.push(insert_item)
+        _validate_item(insert_item, nil, prohibited_words, min_offer_count) ? in_stock_items.push(insert_item) : invalid_items.push(insert_item)
       end
     end
 
@@ -195,7 +195,7 @@ class ApplicationController < ActionController::Base
     # 禁止ワードがあれば、取得しない
     return false if _include_prohibited_word(item, prohibited_words)
     # 新品出品数が指定数より少なければ、取得しない
-    return false if item['offer_count'].to_s < min_offer_count
+    return false unless _validate_offer_count(item['offer_count'].to_s, min_offer_count)
 
     return true
   end
@@ -261,6 +261,10 @@ class ApplicationController < ActionController::Base
     _validate_item_availability(item['availability']) && validate_item_status_of_is_prime(item['asin'], item['is_prime'].to_s)
   end
 
+  def _validate_offer_count(offer_count, min_offer_count)
+    min_offer_count.to_i <= offer_count.to_i
+  end
+
   def fetch_asins_by_label(label_id)
     asins = []
     Item.joins(:search_condition).where(search_conditions: {label_id: label_id}).each do |item|
@@ -273,10 +277,10 @@ class ApplicationController < ActionController::Base
     Item.delete_all(code: codes)
   end
 
-  def extract_invalid_item_codes(items, prohibited_words)
+  def extract_invalid_item_codes(items, prohibited_words, min_offer_count)
     invalid_item_codes = []
     items.each do |item|
-      next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words)
+      next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words) && _validate_offer_count(item['offer_count'].to_s, min_offer_count)
       invalid_item_codes.push(item['code'])
     end
     return invalid_item_codes
