@@ -24,11 +24,12 @@ class BulksController < ApplicationController
       label.save
       ele.each do |keyword|
         search_condition = SearchCondition.new(
-          :label_id       => label.id,
-          :keyword        => keyword,
-          :negative_match => params['negative_match'],
-          :category       => params['category'],
-          :is_prime       => params['is_prime'] || "0"
+          :label_id        => label.id,
+          :keyword         => keyword,
+          :negative_match  => params['negative_match'],
+          :category        => params['category'],
+          :is_prime        => params['is_prime'] || "0",
+          :min_offer_count => params['min_offer_count'] || "0",
         )
         search_condition.save
       end
