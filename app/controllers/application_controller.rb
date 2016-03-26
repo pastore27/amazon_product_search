@@ -262,7 +262,7 @@ class ApplicationController < ActionController::Base
   end
 
   def _validate_offer_count(offer_count, min_offer_count)
-    min_offer_count <= offer_count
+    min_offer_count.to_i <= offer_count.to_i
   end
 
   def fetch_asins_by_label(label_id)
@@ -280,7 +280,7 @@ class ApplicationController < ActionController::Base
   def extract_invalid_item_codes(items, prohibited_words, min_offer_count)
     invalid_item_codes = []
     items.each do |item|
-      next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words) && _validate_offer_count(item['offer_total'].to_s, min_offer_count)
+      next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words) && _validate_offer_count(item['offer_count'].to_s, min_offer_count)
       invalid_item_codes.push(item['code'])
     end
     return invalid_item_codes
