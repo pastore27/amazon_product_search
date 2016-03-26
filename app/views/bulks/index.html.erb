@@ -54,7 +54,8 @@
   </div>
   <div class="form-group">
     <label>新品商品の出品者数</label>
-    <input style="width:150px;" name="min_offer_count" class="form-control">出品者以上〜
+    <input style="width:150px;" name="min_offer_count" class="form-control">
+    出品者以上。例えば、 3 と設定した場合、出品者数が 3 以上の商品が条件に当てはまります。
   </div>
   <%= submit_tag '上記検索条件を一括登録', :class => "btn btn-primary" %>
 <% end %>
@@ -68,7 +69,8 @@
 <h4>商品チェックオプション</h4>
   <div class="form-group">
     <label>新品商品の出品者数</label>
-    <input style="width:150px;" name="min_offer_count" class="form-control">より出品者数が少ない場合、不正商品とみなします。
+    <input style="width:150px;" name="min_offer_count" class="form-control">
+    より出品者数が少ない場合、不正商品とみなします。3 と設定した場合、出品者数が 2 以下だと不正商品とみなされます。
   </div>
 
   <%= submit_tag '不正商品code一覧のCSVダウンロード', :class => "btn btn-danger" %>
