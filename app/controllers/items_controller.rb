@@ -89,12 +89,14 @@ class ItemsController < ApplicationController
     label_id = params[:label_id]
     label = Label.find_by(id: label_id, user_id: current_user.id)
 
+    min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
+
     # csv出力するデータを選定
     csv_items_in_stock = []
     invalid_item_codes = []
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api_with_item_check(fetch_asins_by_label(label_id), label_id) # codeを生成するために、label_idを渡す必要がある
+    stored_items = req_lookup_api_with_item_check(fetch_asins_by_label(label_id), label_id, min_offer_count) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
       # プライムだったものが、プライムでなくなった場合、不正商品とする
       unless validate_item_status_of_is_prime(stored_item['asin'], stored_item['is_prime']) then
@@ -224,11 +226,15 @@ class ItemsController < ApplicationController
     # ラベルに紐づく検索条件を取得
     label_id = params[:label_id]
     label    = Label.find_by(id: label_id, user_id: current_user.id)
+
+    min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
+
     invalid_item_codes = extract_invalid_item_codes(
                            req_lookup_api(
                              fetch_asins_by_label(label_id), label_id
                            ),
-                           ProhibitedWord.where(user_id: current_user.id)
+                           ProhibitedWord.where(user_id: current_user.id),
+                           min_offer_count
                          )
 
     tmp_zip = generate_tmp_zip_file_name()

@@ -40,6 +40,7 @@ class BulksController < ApplicationController
 
   def check_items
     labels = Label.where(user_id: current_user.id)
+    min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
     invalid_item_codes = []
     labels.each do |label|
       invalid_item_codes.concat(
@@ -47,7 +48,8 @@ class BulksController < ApplicationController
           req_lookup_api(
             fetch_asins_by_label(label.id), label.id
           ),
-          ProhibitedWord.where(user_id: current_user.id)
+          ProhibitedWord.where(user_id: current_user.id),
+          min_offer_count
         )
       )
     end
