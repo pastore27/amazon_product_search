@@ -48,5 +48,9 @@
       <input name="is_prime" type="checkbox" value="1">Amazonプライム指定
     </label>
   </div>
+  <div class="form-group">
+    <label>新品商品の他出品者数</label>
+    <input style="width:150px;" name="min_offer_count" class="form-control">出品者以上〜
+</div>
   <%= submit_tag '新規条件で検索', :class => "btn btn-primary" %>
 <% end %>

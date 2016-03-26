@@ -10,10 +10,11 @@ class SearchProductsController < ApplicationController
 
   def get_products
     @search_info = {
-      'keyword'        => params['keyword'],
-      'negative_match' => params['negative_match'],
-      'category'       => params['category'],
-      'is_prime'       => params['is_prime']
+      'keyword'         => params['keyword'],
+      'negative_match'  => params['negative_match'],
+      'category'        => params['category'],
+      'is_prime'        => params['is_prime'],
+      'min_offer_count' => params['min_offer_count']
     }
 
     # search_index=Allの時は5ページまでしか取得できない。Amazon APIの仕様
@@ -33,11 +34,12 @@ class SearchProductsController < ApplicationController
 
   def create_search_condition
     search_condition = SearchCondition.new(
-      :label_id       => params['label_id'],
-      :keyword        => params['keyword'],
-      :negative_match => params['negative_match'],
-      :category       => params['category'],
-      :is_prime       => params['is_prime']
+      :label_id        => params['label_id'],
+      :keyword         => params['keyword'],
+      :negative_match  => params['negative_match'],
+      :category        => params['category'],
+      :is_prime        => params['is_prime'],
+      :min_offer_count => params['min_offer_count'],
     )
     search_condition.save
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160123171042) do
+ActiveRecord::Schema.define(version: 20160326033219) do
 
   create_table "items", force: true do |t|
     t.integer  "user_id",             null: false
@@ -46,11 +46,12 @@ ActiveRecord::Schema.define(version: 20160123171042) do
   add_index "prohibited_words", ["user_id"], name: "index_prohibited_words_on_user_id", using: :btree
 
   create_table "search_conditions", force: true do |t|
-    t.integer  "label_id",       null: false
+    t.integer  "label_id",                    null: false
     t.string   "keyword"
     t.string   "negative_match"
-    t.string   "category",       null: false
-    t.integer  "is_prime",       null: false
+    t.string   "category",                    null: false
+    t.integer  "is_prime",                    null: false
+    t.integer  "min_offer_count", default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

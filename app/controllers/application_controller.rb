@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words, condition['min_offer_count'].to_s)
       ret_items.push(insert_item)
     end
 
@@ -173,7 +173,7 @@ class ApplicationController < ActionController::Base
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
       insert_item['search_condition_id'] = condition['id']
-      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words)
+      next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words, condition['min_offer_count'].to_s)
       variation_items.push(insert_item)
     end
 
@@ -183,7 +183,7 @@ class ApplicationController < ActionController::Base
     return variation_items
   end
 
-  def _validate_item(item, specified_is_prime, prohibited_words)
+  def _validate_item(item, specified_is_prime, prohibited_words, min_offer_count)
     # プライム指定でフィルタリング
     return false  if (specified_is_prime == '1') && !_is_prime(item['is_prime'].to_s)
     # 在庫状況でフィルタリング
@@ -194,6 +194,8 @@ class ApplicationController < ActionController::Base
     return false if item['is_adult'].to_s == '1'
     # 禁止ワードがあれば、取得しない
     return false if _include_prohibited_word(item, prohibited_words)
+    # 新品出品数が指定数より少なければ、取得しない
+    return false if item['offer_count'].to_s < min_offer_count
 
     return true
   end
@@ -212,6 +214,7 @@ class ApplicationController < ActionController::Base
     # img_urlsにはmain_img_urlも含まれるので消す
     sub_img_urls.delete(main_img_url) if sub_img_urls
 
+    offer_summary = item.get_element('OfferSummary')
     offer_listing = item.get_element('Offers/Offer/OfferListing')
     is_prime = offer_listing ? offer_listing.get('IsEligibleForPrime') : 0
     availability = offer_listing ? offer_listing.get('Availability') : 0
@@ -230,7 +233,8 @@ class ApplicationController < ActionController::Base
       'is_adult'     => item_attributes ? item_attributes.get('IsAdultProduct') : 0,
       'availability' => availability,
       'main_img_url' => main_img_url,
-      'sub_img_urls' => sub_img_urls
+      'sub_img_urls' => sub_img_urls,
+      'offer_count'  => offer_summary ? offer_summary.get('TotalNew') : 0
     }
 
     return insert_item
