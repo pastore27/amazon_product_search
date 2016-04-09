@@ -7,7 +7,7 @@ class BulksController < ApplicationController
 
   def index
     @is_job_running = false
-    DelayedJob.all.each do |job|
+    DelayedJob.where(last_error: nil).each do |job|
       job_data = YAML::load(job.handler).job_data
       if (job_data['arguments'][0].instance_of?(Hash))
         @is_job_running = true if job_data['arguments'][0]['user']['id'] == current_user.id
