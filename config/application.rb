@@ -33,5 +33,8 @@ module AmazonProductSearch
 
     # Active Jobの設定
     config.active_job.queue_adapter = :delayed_job
+
+    # lib以下を読み込む
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end
