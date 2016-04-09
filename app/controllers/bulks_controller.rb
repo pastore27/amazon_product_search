@@ -6,7 +6,13 @@ class BulksController < ApplicationController
   before_action :correct_user
 
   def index
-
+    @is_job_running = false
+    DelayedJob.all.each do |job|
+      job_data = YAML::load(job.handler).job_data
+      if (job_data['arguments'][0].instance_of?(Hash))
+        @is_job_running = true if job_data['arguments'][0]['user_id'] == current_user.id
+      end
+    end
   end
 
   def add_search_conditions
@@ -36,6 +42,11 @@ class BulksController < ApplicationController
       count += 1
     end
 
+    redirect_to :action => 'index'
+  end
+
+  def add_items
+    ItemJob.perform_later({user_id: current_user.id})
     redirect_to :action => 'index'
   end
 

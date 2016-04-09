@@ -60,6 +60,17 @@
   <%= submit_tag '上記検索条件を一括登録', :class => "btn btn-primary" %>
 <% end %>
 
+<h3>一括で商品を追加する</h3>
+<pre>アカウントに紐付く全検索条件で最新の商品を追加します。</pre>
+
+<%= form_tag("/bulks/#{current_user.id}/add_items", method: :post) do %>
+  <% if @is_job_running %>
+    <button type="button" class="btn btn-info">商品追加中</button>
+  <% else %>
+    <%= submit_tag '商品を追加', :class => "btn btn-primary" %>
+  <% end %>
+<% end %>
+
 <h3>一括で不正商品を確認する</h3>
 <pre>
   全ラベルのすべての商品の "在庫チェック", "禁止ワードチェック", "新品商品の出品者数チェック" を行い、チェックに引っかかった不正商品code一覧をCSV出力します。
