@@ -44,3 +44,5 @@ gem 'kaminari'
 gem 'kaminari-bootstrap'
 gem 'devise'
 gem 'jquery-turbolinks'
+gem "delayed_job"
+gem "delayed_job_active_record"
