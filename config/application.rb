@@ -29,5 +29,8 @@ module AmazonProductSearch
     config.i18n.default_locale = :ja
     # DBはUTCのまま、表示のみをJSTにする
     config.time_zone = 'Tokyo'
+
+    # Active Jobの設定
+    config.active_job.queue_adapter = :delayed_job
   end
 end
