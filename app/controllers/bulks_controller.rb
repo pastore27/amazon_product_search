@@ -10,7 +10,7 @@ class BulksController < ApplicationController
     DelayedJob.all.each do |job|
       job_data = YAML::load(job.handler).job_data
       if (job_data['arguments'][0].instance_of?(Hash))
-        @is_job_running = true if job_data['arguments'][0]['user_id'] == current_user.id
+        @is_job_running = true if job_data['arguments'][0]['user']['id'] == current_user.id
       end
     end
   end
@@ -46,7 +46,7 @@ class BulksController < ApplicationController
   end
 
   def add_items
-    ItemJob.perform_later({user_id: current_user.id})
+    ItemJob.perform_later({user: to_user_hash(current_user)})
     redirect_to :action => 'index'
   end
 
@@ -58,7 +58,7 @@ class BulksController < ApplicationController
       invalid_item_codes.concat(
         extract_invalid_item_codes(
           req_lookup_api(
-            fetch_asins_by_label(label.id), label.id
+            to_user_hash(current_user), fetch_asins_by_label(label.id), label.id
           ),
           ProhibitedWord.where(user_id: current_user.id),
           min_offer_count

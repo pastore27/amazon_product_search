@@ -16,4 +16,13 @@ class ApplicationController < ActionController::Base
     redirect_to(root_path) unless current_user && current_user.id.to_s == '1'
   end
 
+  def to_user_hash(current_user)
+    return {
+      :id                => current_user.id,
+      :aws_access_key_id => current_user.aws_access_key_id,
+      :aws_secret_key    => current_user.aws_secret_key,
+      :associate_tag     => current_user.associate_tag,
+    }
+  end
+
 end

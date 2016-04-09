@@ -3,16 +3,16 @@ require 'amazon/ecs'
 
 module Helper::AmazonEcs
 
-  def aws_api_init
+  def aws_api_init(user)
     Amazon::Ecs.options = {
-      :AWS_access_key_id => current_user.aws_access_key_id,
-      :AWS_secret_key    => current_user.aws_secret_key,
-      :associate_tag     => current_user.associate_tag
+      :AWS_access_key_id => user[:aws_access_key_id],
+      :AWS_secret_key    => user[:aws_secret_key],
+      :associate_tag     => user[:associate_tag]
     }
   end
 
-  def req_search_api(condition, page)
-    aws_api_init()
+  def req_search_api(user, condition, page)
+    aws_api_init(user)
 
     search_word    = ''
     keyword        = condition['keyword']
@@ -45,7 +45,7 @@ module Helper::AmazonEcs
     end
 
     ret_items = []
-    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
+    prohibited_words = ProhibitedWord.where(user_id: user[:id])
     res.items.each do |item|
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
@@ -59,7 +59,7 @@ module Helper::AmazonEcs
     res.items.each do |item|
       parent_asins.push(item.get('ParentASIN')) if item.get('ParentASIN')
     end
-    ret_items.concat(_get_variation_items(parent_asins, condition))
+    ret_items.concat(_get_variation_items(user, parent_asins, condition))
 
     # 重複を削除する
     ret_items.uniq! {|item| item['asin']}
@@ -69,8 +69,8 @@ module Helper::AmazonEcs
 
   # asinsの配列から商品情報を取得する
   # codeを生成するために、label_idを渡してもらう必要がある
-  def req_lookup_api(asins, label_id)
-    aws_api_init()
+  def req_lookup_api(user, asins, label_id)
+    aws_api_init(user)
 
     ret_items = []
 
@@ -104,12 +104,12 @@ module Helper::AmazonEcs
   end
 
   # 商品チェックも行う
-  def req_lookup_api_with_item_check(asins, label_id, min_offer_count)
-    aws_api_init()
+  def req_lookup_api_with_item_check(user, asins, label_id, min_offer_count)
+    aws_api_init(user)
 
     in_stock_items     = []
     invalid_items = []
-    prohibited_words   = ProhibitedWord.where(user_id: current_user.id)
+    prohibited_words   = ProhibitedWord.where(user_id: user[:id])
 
     # 10件ずつしか商品データを取得できない。Amazon APIの仕様。
     asins.each_slice(10).to_a.each do |ele|
@@ -145,8 +145,8 @@ module Helper::AmazonEcs
 
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
-  def _get_variation_items(parent_asins, condition)
-    aws_api_init()
+  def _get_variation_items(user, parent_asins, condition)
+    aws_api_init(user)
 
     retry_count = 0
     begin
@@ -165,7 +165,7 @@ module Helper::AmazonEcs
     end
 
     variation_items  = []
-    prohibited_words = ProhibitedWord.where(user_id: current_user.id)
+    prohibited_words = ProhibitedWord.where(user_id: user[:id])
     res.items.each do |item|
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
