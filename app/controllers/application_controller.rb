@@ -1,5 +1,5 @@
 # coding: utf-8
-require_dependency 'amazon/ecs'
+require 'amazon/ecs'
 
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
