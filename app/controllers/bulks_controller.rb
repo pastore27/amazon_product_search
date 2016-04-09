@@ -6,7 +6,13 @@ class BulksController < ApplicationController
   before_action :correct_user
 
   def index
-
+    @is_job_running = false
+    DelayedJob.where(last_error: nil).each do |job|
+      job_data = YAML::load(job.handler).job_data
+      if (job_data['arguments'][0].instance_of?(Hash))
+        @is_job_running = true if job_data['arguments'][0]['user']['id'] == current_user.id
+      end
+    end
   end
 
   def add_search_conditions
@@ -39,6 +45,11 @@ class BulksController < ApplicationController
     redirect_to :action => 'index'
   end
 
+  def add_items
+    ItemJob.perform_later({user: to_user_hash(current_user)})
+    redirect_to :action => 'index'
+  end
+
   def check_items
     labels = Label.where(user_id: current_user.id)
     min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
@@ -47,7 +58,7 @@ class BulksController < ApplicationController
       invalid_item_codes.concat(
         extract_invalid_item_codes(
           req_lookup_api(
-            fetch_asins_by_label(label.id), label.id
+            to_user_hash(current_user), fetch_asins_by_label(label.id), label.id
           ),
           ProhibitedWord.where(user_id: current_user.id),
           min_offer_count

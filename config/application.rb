@@ -6,6 +6,7 @@ require 'csv'
 require 'nkf'
 require 'zipruby'
 require 'open-uri'
+require 'yaml'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -29,5 +30,11 @@ module AmazonProductSearch
     config.i18n.default_locale = :ja
     # DBはUTCのまま、表示のみをJSTにする
     config.time_zone = 'Tokyo'
+
+    # Active Jobの設定
+    config.active_job.queue_adapter = :delayed_job
+
+    # lib以下を読み込む
+    config.autoload_paths += %W(#{config.root}/lib)
   end
 end

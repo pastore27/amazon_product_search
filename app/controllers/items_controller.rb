@@ -24,7 +24,7 @@ class ItemsController < ApplicationController
     search_conditions.each do |condition|
       max_page = condition['category'] == "All" ? 5 : 10;
       (1..max_page).each do |page|
-        fetched_items.concat(req_search_api(condition, page))
+        fetched_items.concat(req_search_api(to_user_hash(current_user), condition, page))
         # Amazon APIの規約に従う
         sleep(1)
       end
@@ -96,7 +96,7 @@ class ItemsController < ApplicationController
     invalid_item_codes = []
 
     # item_lookup APIを叩く
-    stored_items = req_lookup_api_with_item_check(fetch_asins_by_label(label_id), label_id, min_offer_count) # codeを生成するために、label_idを渡す必要がある
+    stored_items = req_lookup_api_with_item_check(to_user_hash(current_user), fetch_asins_by_label(label_id), label_id, min_offer_count) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
       # プライムだったものが、プライムでなくなった場合、不正商品とする
       unless validate_item_status_of_is_prime(stored_item['asin'], stored_item['is_prime']) then
@@ -160,7 +160,7 @@ class ItemsController < ApplicationController
     end
 
     # item_lookup APIを叩く
-    export_items = req_lookup_api(asins, label_id) # codeを生成するために、label_idを渡す必要がある
+    export_items = req_lookup_api(to_user_hash(current_user), asins, label_id) # codeを生成するために、label_idを渡す必要がある
 
     # img出力の前処理
     img_data = []
@@ -231,7 +231,7 @@ class ItemsController < ApplicationController
 
     invalid_item_codes = extract_invalid_item_codes(
                            req_lookup_api(
-                             fetch_asins_by_label(label_id), label_id
+                             to_user_hash(current_user), fetch_asins_by_label(label_id), label_id
                            ),
                            ProhibitedWord.where(user_id: current_user.id),
                            min_offer_count

@@ -37,6 +37,7 @@ Rails.application.routes.draw do
 
   get  "/bulks"                                => "bulks#index"
   post "/bulks/:user_id/add_search_conditions" => "bulks#add_search_conditions"
+  post "/bulks/:user_id/add_items"             => "bulks#add_items"
   post "/bulks/:user_id/check_items"           => "bulks#check_items"
   post "/bulks/:user_id/delete_items"          => "bulks#delete_items"
 

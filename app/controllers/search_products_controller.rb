@@ -23,7 +23,7 @@ class SearchProductsController < ApplicationController
     # APIリクエスト
     @items = []
     (1..max_page).each do |page|
-      @items.concat(req_search_api(@search_info, page))
+      @items.concat(req_search_api(to_user_hash(current_user), @search_info, page))
       # Amazon APIの規約に従う
       sleep(1)
     end
