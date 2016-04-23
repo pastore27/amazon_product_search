@@ -54,12 +54,15 @@ module Helper::AmazonEcs
       ret_items.push(insert_item)
     end
 
+    # 類似商品を取得
+    ret_items.concat(_get_similary_items(user, ret_items, condition, prohibited_words))
+
     # 色違いの商品の取得
     parent_asins = []
     res.items.each do |item|
       parent_asins.push(item.get('ParentASIN')) if item.get('ParentASIN')
     end
-    ret_items.concat(_get_variation_items(user, parent_asins, condition))
+    ret_items.concat(_get_variation_items(user, parent_asins, condition, prohibited_words))
 
     # 重複を削除する
     ret_items.uniq! {|item| item['asin']}
@@ -145,7 +148,7 @@ module Helper::AmazonEcs
 
   # parent_asinsの配列から色違いの商品情報を取得する。(配列を返す)
   # parent_asinsのものは削除
-  def _get_variation_items(user, parent_asins, condition)
+  def _get_variation_items(user, parent_asins, condition, prohibited_words)
     aws_api_init(user)
 
     retry_count = 0
@@ -165,7 +168,7 @@ module Helper::AmazonEcs
     end
 
     variation_items  = []
-    prohibited_words = ProhibitedWord.where(user_id: user[:id])
+
     res.items.each do |item|
       insert_item = _format_item(item)
       # search_condition条件を追加する (商品追加の際に利用するため)
@@ -178,6 +181,42 @@ module Helper::AmazonEcs
     variation_items.delete_if { |item| parent_asins.include?(item['asin']) }
 
     return variation_items
+  end
+
+  # 類似商品情報を取得する。
+  def _get_similary_items(user, items, condition, prohibited_words)
+    aws_api_init(user)
+
+    asins = items.map { |item| item['asin'] }
+
+    valid_items  = []
+    asins.each do |ele|
+      retry_count = 0
+      begin
+        res = Amazon::Ecs.similarity_lookup(ele,
+                                            :response_group => 'Large',
+                                            :country        => 'jp'
+                                           )
+      rescue
+        retry_count += 1
+        if retry_count < 5
+          sleep(3)
+          retry
+        else
+          return []
+        end
+      end
+
+      res.items.each do |item|
+        insert_item = _format_item(item)
+        # search_condition条件を追加する (商品追加の際に利用するため)
+        insert_item['search_condition_id'] = condition['id']
+        next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words, condition['min_offer_count'].to_s)
+        valid_items.push(insert_item)
+      end
+    end
+
+    return valid_items
   end
 
   def _validate_item(item, specified_is_prime, prohibited_words, min_offer_count)
