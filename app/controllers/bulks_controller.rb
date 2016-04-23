@@ -53,10 +53,10 @@ class BulksController < ApplicationController
   def check_items
     labels = Label.where(user_id: current_user.id)
     min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
-    invalid_item_codes = []
+    invalid_items = []
     labels.each do |label|
-      invalid_item_codes.concat(
-        extract_invalid_item_codes(
+      invalid_items.concat(
+        extract_invalid_items(
           req_lookup_api(
             to_user_hash(current_user), fetch_asins_by_label(label.id), label.id
           ),
@@ -71,7 +71,7 @@ class BulksController < ApplicationController
       # csvファイルの追加
       ar.add_buffer(
         NKF::nkf('--sjis -Lw', "不正商品(全ラベル).csv"),
-        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_items))
       )
     end
 

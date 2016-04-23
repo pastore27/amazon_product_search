@@ -313,13 +313,13 @@ module Helper::AmazonEcs
     Item.delete_all(code: codes)
   end
 
-  def extract_invalid_item_codes(items, prohibited_words, min_offer_count)
-    invalid_item_codes = []
+  def extract_invalid_items(items, prohibited_words, min_offer_count)
+    invalid_items = []
     items.each do |item|
       next if _validate_item_stock(item) && !_include_prohibited_word(item, prohibited_words) && _validate_offer_count(item['offer_count'].to_s, min_offer_count)
-      invalid_item_codes.push(item['code'])
+      invalid_items.push({ 'code' =>item['code'], 'title' => item['title'].byteslice(0,150).scrub('') })
     end
-    return invalid_item_codes
+    return invalid_items
   end
 
   def generate_tmp_zip_file_name()
@@ -375,15 +375,16 @@ module Helper::AmazonEcs
     return csv_str
   end
 
-  def create_invalid_items_csv_str(codes)
-    csv_header = %w/ code /
+  def create_invalid_items_csv_str(items)
+    csv_header = %w/ code title /
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
       # body の追加
-      codes.each do |code|
+      items.each do |item|
         csv_body = {}
-        csv_body['code'] = code
+        csv_body['code'] = item['code']
+        csv_body['title'] = item['title']
         csv << csv_body.values_at(*csv_header)
       end
     end

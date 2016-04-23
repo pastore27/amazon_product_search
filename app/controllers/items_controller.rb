@@ -93,14 +93,14 @@ class ItemsController < ApplicationController
 
     # csv出力するデータを選定
     csv_items_in_stock = []
-    invalid_item_codes = []
+    invalid_items      = []
 
     # item_lookup APIを叩く
     stored_items = req_lookup_api_with_item_check(to_user_hash(current_user), fetch_asins_by_label(label_id), label_id, min_offer_count) # codeを生成するために、label_idを渡す必要がある
     stored_items[:in_stock_items].each do |stored_item|
       # プライムだったものが、プライムでなくなった場合、不正商品とする
       unless validate_item_status_of_is_prime(stored_item['asin'], stored_item['is_prime']) then
-        invalid_item_codes.push(stored_item['code'])
+        invalid_items.push({ 'code' => stored_item['code'], 'title' => stored_item['title'] })
         next
       end
 
@@ -117,7 +117,7 @@ class ItemsController < ApplicationController
                      })
     end
     stored_items[:invalid_items].each do |item|
-      invalid_item_codes.push(item['code'])
+      invalid_items.push({ 'code' => item['code'], 'title' => item['title'] })
     end
 
     # csv出力
@@ -140,7 +140,7 @@ class ItemsController < ApplicationController
       # 不正商品csvファイルの追加
       ar.add_buffer(
         NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_items))
       )
     end
 
@@ -229,19 +229,19 @@ class ItemsController < ApplicationController
 
     min_offer_count = params[:min_offer_count] ? params[:min_offer_count] : 0
 
-    invalid_item_codes = extract_invalid_item_codes(
-                           req_lookup_api(
-                             to_user_hash(current_user), fetch_asins_by_label(label_id), label_id
-                           ),
-                           ProhibitedWord.where(user_id: current_user.id),
-                           min_offer_count
-                         )
+    invalid_items = extract_invalid_items(
+                      req_lookup_api(
+                        to_user_hash(current_user), fetch_asins_by_label(label_id), label_id
+                      ),
+                      ProhibitedWord.where(user_id: current_user.id),
+                      min_offer_count
+                    )
 
     tmp_zip = generate_tmp_zip_file_name()
     Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
       ar.add_buffer(
         NKF::nkf('--sjis -Lw', "不正商品(#{label.name}).csv"),
-        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_item_codes))
+        NKF::nkf('--sjis -Lw', create_invalid_items_csv_str(invalid_items))
       )
     end
 
