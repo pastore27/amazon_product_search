@@ -11,8 +11,7 @@ class ItemJob < ActiveJob::Base
     Label.where(user_id: user[:id]).each do |label|
       # ラベルに紐づく検索条件を取得
       label_id = label.id
-      label = Label.find_by(id: label_id, user_id: user[:id])
-      search_conditions = SearchCondition.where(label_id: label_id)
+      search_conditions = SearchCondition.where(label_id: label_id, seller_id: nil)
 
       # Amazon APIよりデータを取得
       # APIリクエスト数の最大値は、search_conditions.length * 10
@@ -28,13 +27,11 @@ class ItemJob < ActiveJob::Base
 
       # 新規商品データをdbに保存
       fetched_items.each do |fetched_item|
-        asin = fetched_item['asin']
-        code = generate_code(asin, label_id)
         item = Item.new(
           :user_id             => user[:id],
           :search_condition_id => fetched_item['search_condition_id'],
-          :asin                => asin,
-          :code                => code,
+          :asin                => fetched_item['asin'],
+          :code                => generate_code(asin, label_id),
           :name                => fetched_item['title'].byteslice(0,255).scrub(''), # nameカラムは255byte以内
           :is_prime            => fetched_item['is_prime']
         )
