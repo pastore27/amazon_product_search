@@ -64,23 +64,27 @@ jQuery.ajax = (function(_ajax){
 
 $(function() {
 
-    var max_item_count      = 10200;
-    var item_count_per_page = 60;
-
     $("#search_by_seller_id").on("click", function() {
         $(this).prop('disabled', true);
 
         var seller_id = $('#seller_id').val();
         var page = 1;
-        var url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchants&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
+        var url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchant-items&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
 
         $.ajax({
             type: 'GET',
             url: url + 1,
             success: function(data) {
-                var match = $(data.responseText).find('#s-result-count').text().match(/[\d,]+/);
+                var match = $(data.responseText).find('#s-result-count').text().match(/([\d,]+)/g);
                 console.log(match);
+                var item_count_per_page = match[2];
+                if (item_count_per_page == 24) {
+                    url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchants&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
+                    item_count_per_page = 60;
+                }
+                var max_item_count = 170 * item_count_per_page;
                 var item_count = match[0].replace( /,/g , '') > max_item_count ? max_item_count - 1 : match[0].replace( /,/g , '')
+
                 var last_page = Math.floor( item_count / item_count_per_page ) + 1
                 console.log(last_page);
                 $("<input>", {

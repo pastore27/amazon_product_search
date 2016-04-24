@@ -8,7 +8,7 @@
     <tr>
       <th>出品者ID</th>
       <th>プライム指定</th>
-      <!-- <th>新品商品の最低出品者数</th> -->
+      <th>新品商品の最低出品者数</th>
     </tr>
   </thead>
   <tbody id="tbody">
@@ -16,7 +16,7 @@
     <tr>
       <td><%= search_condition.seller_id %></td>
       <td><% if search_condition.is_prime == 1 %>あり<% end %></td>
-      <!-- <td><%= search_condition.min_offer_count %></td> -->
+      <td><%= search_condition.min_offer_count %></td>
     </tr>
     <% end %>
   </tbody>
@@ -56,6 +56,7 @@
 <pre>上記検索条件で最新の商品を追加します。追加された商品をCSV出力する際のオプションを以下で設定してください。</pre>
 
 <% if use_seller_id %>
+  <pre>収集できる商品数の上限は、 10,200 件 になります。</pre>
   <h4>CSVオプション</h4>
   <form method="POST" action="/labels/<%= current_user.id %>/<%= @label.id %>/add_items_by_asins">
     <div class="form-group">

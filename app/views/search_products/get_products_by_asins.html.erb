@@ -50,7 +50,7 @@
   <input type="hidden" name="seller_id" value="<%= @search_info['seller_id'] %>">
   <input type="hidden" name="seller_name" value="<%= @search_info['seller_name'] %>">
   <input type="hidden" name="is_prime" value="<% if @search_info['is_prime'] == '1' then %>1<% else %>0<% end %>">
-
+  <input type="hidden" name="min_offer_count" value="<%= @search_info['min_offer_count'] %>">
   <%= submit_tag "上記商品をラベル、検索条件に保存", :class => "btn btn-primary" %>
 </div>
 <% end %>
