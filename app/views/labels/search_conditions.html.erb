@@ -9,7 +9,6 @@
       <th>出品者ID</th>
       <th>プライム指定</th>
       <!-- <th>新品商品の最低出品者数</th> -->
-      <th>削除</th>
     </tr>
   </thead>
   <tbody id="tbody">
@@ -18,9 +17,6 @@
       <td><%= search_condition.seller_id %></td>
       <td><% if search_condition.is_prime == 1 %>あり<% end %></td>
       <!-- <td><%= search_condition.min_offer_count %></td> -->
-      <td>
-        <a href="/labels/<%= current_user.id %>/<%= @label.id %>/search_conditions/<%= search_condition.id %>/delete" onclick="return confirm('本当に削除しますか？')">削除</a>
-      </td>
     </tr>
     <% end %>
   </tbody>
