@@ -64,20 +64,24 @@ jQuery.ajax = (function(_ajax){
 
 $(function() {
 
+    var max_item_count      = 10200;
+    var item_count_per_page = 60;
+
     $("#search_by_seller_id").on("click", function() {
         $(this).prop('disabled', true);
 
         var seller_id = $('#seller_id').val();
         var page = 1;
-        var url = 'http://www.amazon.co.jp/s?ie=UTF8&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
+        var url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchants&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
 
         $.ajax({
             type: 'GET',
             url: url + 1,
             success: function(data) {
-                var match = $(data.responseText).find('#s-result-count').text().match(/\d+/);
+                var match = $(data.responseText).find('#s-result-count').text().match(/[\d,]+/);
                 console.log(match);
-                var last_page = Math.floor( match[0] / 24 ) + 1
+                var item_count = match[0].replace( /,/g , '') > max_item_count ? max_item_count - 1 : match[0].replace( /,/g , '')
+                var last_page = Math.floor( item_count / item_count_per_page ) + 1
                 console.log(last_page);
                 $("<input>", {
                     type: 'hidden',
@@ -95,10 +99,11 @@ $(function() {
 
                 $.when.apply($, request).done(function() {
                     for (var i = 1; i <= last_page; i++) {
+                        console.log(i);
                         var html = $(arguments[i-1][0].results[0]);
 
-                        for (var j = 0; j < 24; j++) {
-                            var index = 24 * (i-1) + j;
+                        for (var j = 0; j < item_count_per_page; j++) {
+                            var index = item_count_per_page * (i-1) + j;
                             var asin = html.find('#result_' + index).data('asin');
                             if (asin) {
                                 $("<input>", {
