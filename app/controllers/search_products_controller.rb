@@ -4,6 +4,8 @@ class SearchProductsController < ApplicationController
   # ユーザがログインしていないとにアクセスできないように
   before_action :authenticate_user!
 
+  protect_from_forgery except: :get_products_by_asins
+
   def index
     @search_conditions = SearchCondition.all
   end
@@ -44,6 +46,20 @@ class SearchProductsController < ApplicationController
     search_condition.save
 
     redirect_to :action => 'index'
+  end
+
+  def form_for_search_by_seller_id
+
+  end
+
+  def get_products_by_asins
+    @search_info = {
+      'seller_id'   => params['seller_id'],
+      'seller_name' => params['seller_name'],
+      'is_prime'    => params['is_prime'],
+    }
+    @items = req_lookup_api(to_user_hash(current_user), params['asins'], 1, @search_info) # dummyのlabel_idを渡す
+    @item_total = @items.length
   end
 
 end

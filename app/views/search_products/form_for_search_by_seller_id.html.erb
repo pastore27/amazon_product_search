@@ -1,0 +1,19 @@
+<h3>商品検索(by 出品者ID)</h3>
+
+<form method="POST" action="/search_products_by_seller_id/products">
+  <div class="form-group">
+    <label>出品者ID</label>
+    <input id="seller_id" name="seller_id" class="form-control">
+  </div>
+  <div class="checkbox">
+    <label>
+      <input name="is_prime" type="checkbox" value="1">Amazonプライム指定
+    </label>
+  </div>
+  <div id="seller_name">
+  </div>
+  <div id="asins">
+  </div>
+  <button id="search_by_seller_id" class="btn btn-primary">上記出品者の商品を検索</button>
+  <button id="submit-button" type="submit" class="btn btn-primary hide"></button>
+</form>
