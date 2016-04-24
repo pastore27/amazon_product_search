@@ -100,6 +100,7 @@ module Helper::AmazonEcs
         insert_item = _format_item(item)
         if (condition)
           next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words, condition['min_offer_count'].to_s)
+          insert_item['search_condition_id'] = condition['id'] ? condition['id'] : ''
         end
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)

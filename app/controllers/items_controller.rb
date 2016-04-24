@@ -6,6 +6,8 @@ class ItemsController < ApplicationController
   before_action :authenticate_user!
   before_action :correct_user
 
+  protect_from_forgery except: :add_items_by_asins
+
   def index
     @label = Label.find_by(id: params[:label_id])
     @items = Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC')
@@ -29,6 +31,70 @@ class ItemsController < ApplicationController
         sleep(1)
       end
     end
+
+    # csv出力するデータを選定
+    csv_items = []
+
+    # 新規商品データをdbに保存
+    fetched_items.each do |fetched_item|
+      asin = fetched_item['asin']
+      code = generate_code(asin, label_id)
+      item = Item.new(
+        :user_id              => current_user.id,
+        :search_condition_id => fetched_item['search_condition_id'],
+        :asin                 => asin,
+        :code                 => code,
+        :name                 => fetched_item['title'].byteslice(0,255).scrub(''), # nameカラムは255byte以内
+        :is_prime             => fetched_item['is_prime']
+      )
+      if item.save
+        csv_items.push({
+                         'asin'         => asin,
+                         'code'         => code,
+                         'jan'          => fetched_item['jan'],
+                         'title'        => fetched_item['title'],
+                         'price'        => fetched_item['price'].to_i,
+                         'headline'     => fetched_item['headline'],
+                         'features'     => fetched_item['features'],
+                         'main_img_url' => fetched_item['main_img_url'],
+                         'sub_img_urls' => fetched_item['sub_img_urls']
+                       })
+      else
+        next
+      end
+    end
+
+    # csv出力
+    csv_strs = []
+    csv_items.each_slice(1000).to_a.each do |ele|
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
+    end
+
+    tmp_zip = generate_tmp_zip_file_name()
+    Zip::Archive.open(tmp_zip, Zip::CREATE) do |ar|
+      # csvファイルの追加
+      count = 1
+      csv_strs.each do |csv_str|
+        ar.add_buffer(
+          NKF::nkf('--sjis -Lw', "新規追加商品(#{label.name}_#{(count.to_i - 1) * 1000 + 1}~#{count.to_i * 1000}件).csv"),
+          NKF::nkf('--sjis -Lw', csv_str)
+        )
+        count += 1
+      end
+    end
+
+    send_zip_file(tmp_zip, "新規追加商品(#{label.name}).zip")
+  end
+
+  def add_items_by_asins
+    # ラベルに紐づく検索条件を取得
+    label_id = params[:label_id]
+    label = Label.find_by(id: label_id, user_id: current_user.id)
+    search_condition = SearchCondition.find_by(label_id: label_id)
+
+    # Amazon APIよりデータを取得
+    # APIリクエスト数の最大値は、search_conditions.length * 10
+    fetched_items = params['asins'] ? req_lookup_api(to_user_hash(current_user), params['asins'], label_id, search_condition) : []
 
     # csv出力するデータを選定
     csv_items = []

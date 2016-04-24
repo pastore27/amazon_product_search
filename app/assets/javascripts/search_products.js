@@ -75,7 +75,10 @@ $(function() {
             type: 'GET',
             url: url + 1,
             success: function(data) {
-                var last_page   = $(data.responseText).find('.pagnDisabled').text();
+                var match = $(data.responseText).find('#s-result-count').text().match(/\d+/);
+                console.log(match);
+                var last_page = Math.floor( match[0] / 24 ) + 1
+                console.log(last_page);
                 $("<input>", {
                     type: 'hidden',
                     name: 'seller_name',

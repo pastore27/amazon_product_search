@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   get  "/search_products_by_seller_id"          => "search_products#form_for_search_by_seller_id"
   post "/search_products_by_seller_id/products" => "search_products#get_products_by_asins"
+  post "/search_products_by_seller_id/create"   => "search_products#create_label_and_search_condition"
 
   get  "/labels"                                => "labels#index"
   get  "/labels/new"                            => "labels#create_form"
@@ -27,6 +28,7 @@ Rails.application.routes.draw do
   get  "/labels/:user_id/:id/search_conditions/:search_condition_id/delete" => "labels#delete_search_condition"
   get  "/labels/:user_id/:label_id/items"                 => "items#index"
   post "/labels/:user_id/:label_id/add_items"             => "items#add_items"
+  post "/labels/:user_id/:label_id/add_items_by_asins"    => "items#add_items_by_asins"
   post "/labels/:user_id/:label_id/download_items"        => "items#download_items"
   post "/labels/:user_id/:label_id/:page/download_imgs"   => "items#download_imgs"
   post "/labels/:user_id/:label_id/check_items"           => "items#check_items"
