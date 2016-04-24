@@ -14,6 +14,12 @@
     <b>Amazonプライム指定あり</b>
   </li>
   <% end %>
+  <% if @search_info['min_offer_count'] != '' then %>
+  <li>
+    <b>新品商品の出品者数</b>
+    <%= @search_info['min_offer_count'] %>
+  </li>
+  <% end %>
 </ul>
 
 <div class="alert alert-info" role="alert">該当する商品は <b><%= @item_total %></b> 件あります。</div>
