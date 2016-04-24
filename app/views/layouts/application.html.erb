@@ -14,9 +14,10 @@
       </div>
       <ul class="nav navbar-nav">
         <% if user_signed_in? %>
-        <li <% if controller.action_name == "index" || controller.action_name == "get_products" %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
+        <li <% if controller.controller_name == "search_products" && (controller.action_name == "index" || controller.action_name == "get_products") %>class="active"<% end %>><a href="/search_products">商品検索</a></li>
         <li <% if controller.action_name == "form_for_search_by_seller_id" || controller.action_name == "get_products_by_asins" %>class="active"<% end %>><a href="/search_products_by_seller_id">商品検索(by 出品者ID)</a></li>
-        <li <% if controller.controller_name == "labels" || controller.controller_name == "items" %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
+        <li <% if (controller.controller_name == "labels" || controller.controller_name == "items") && !@label_for_seller_id %>class="active"<% end %>><a href="/labels">ラベル管理</a></li>
+        <li <% if @label_for_seller_id %>class="active"<% end %>><a href="/labels/index_for_seller_id">ラベル管理(by 出品者ID)</a></li>
         <li <% if controller.controller_name == "prohibited_words" %>class="active"<% end %>><a href="/prohibited_words">禁止ワード管理</a></li>
         <li <% if controller.controller_name == "bulks" %>class="active"<% end %>><a href="/bulks">一括機能</a></li>
         <li <% if controller.controller_name == "accounts" %>class="active"<% end %>><a href="/accounts">アカウント</a></li>

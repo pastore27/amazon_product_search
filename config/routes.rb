@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   post "/search_products_by_seller_id/create"   => "search_products#create_label_and_search_condition"
 
   get  "/labels"                                => "labels#index"
+  get  "/labels/index_for_seller_id"            => "labels#index_for_seller_id"
   get  "/labels/new"                            => "labels#create_form"
   post "/labels/create"                         => "labels#create"
   get  "/labels/:user_id/:id/update"            => "labels#update_form"

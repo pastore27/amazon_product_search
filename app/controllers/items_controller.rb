@@ -11,6 +11,7 @@ class ItemsController < ApplicationController
   def index
     @label = Label.find_by(id: params[:label_id])
     @items = Item.joins(:search_condition).where(search_conditions: {label_id: params[:label_id]}).page(params[:page]).per(PER).order('id ASC')
+    @label_for_seller_id = SearchCondition.where(label_id: params[:label_id]).where.not(seller_id: nil).count > 0 ? true : false
     @page  = params[:page] || 1
   end
 
