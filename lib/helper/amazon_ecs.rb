@@ -37,7 +37,7 @@ module Helper::AmazonEcs
     rescue
       retry_count += 1
       if retry_count < 5
-        sleep(3)
+        sleep(1)
         retry
       else
         return []
@@ -88,7 +88,7 @@ module Helper::AmazonEcs
       rescue
         retry_count += 1
         if retry_count < 5
-          sleep(3)
+          sleep(1)
           retry
         else
           next
@@ -130,7 +130,7 @@ module Helper::AmazonEcs
       rescue
         retry_count += 1
         if retry_count < 5
-          sleep(3)
+          sleep(1)
           retry
         else
           next
@@ -165,7 +165,7 @@ module Helper::AmazonEcs
     rescue
       retry_count += 1
       if retry_count < 5
-        sleep(3)
+        sleep(1)
         retry
       else
         return []
@@ -205,7 +205,7 @@ module Helper::AmazonEcs
       rescue
         retry_count += 1
         if retry_count < 5
-          sleep(3)
+          sleep(1)
           retry
         else
           return []
