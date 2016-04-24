@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160409083316) do
+ActiveRecord::Schema.define(version: 20160424034327) do
 
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   limit: 4,     default: 0, null: false
@@ -68,6 +68,7 @@ ActiveRecord::Schema.define(version: 20160409083316) do
     t.string   "category",        limit: 255,             null: false
     t.integer  "is_prime",        limit: 4,               null: false
     t.integer  "min_offer_count", limit: 4,   default: 0
+    t.string   "seller_id",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
   end
