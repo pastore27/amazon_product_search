@@ -54,9 +54,10 @@ class SearchProductsController < ApplicationController
 
   def get_products_by_asins
     @search_info = {
-      'seller_id'   => params['seller_id'],
-      'seller_name' => params['seller_name'],
-      'is_prime'    => params['is_prime'],
+      'seller_id'       => params['seller_id'],
+      'seller_name'     => params['seller_name'],
+      'is_prime'        => params['is_prime'],
+      'min_offer_count' => params['min_offer_count'],
     }
     @items = params['asins'] ? req_lookup_api(to_user_hash(current_user), params['asins'], 1, @search_info) : [] # dummyのlabel_idを渡す;
     @item_total = @items.length
