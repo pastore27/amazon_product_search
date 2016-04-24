@@ -31,7 +31,7 @@ class ItemJob < ActiveJob::Base
           :user_id             => user[:id],
           :search_condition_id => fetched_item['search_condition_id'],
           :asin                => fetched_item['asin'],
-          :code                => generate_code(asin, label_id),
+          :code                => generate_code(fetched_item['asin'], label_id),
           :name                => fetched_item['title'].byteslice(0,255).scrub(''), # nameカラムは255byte以内
           :is_prime            => fetched_item['is_prime']
         )
