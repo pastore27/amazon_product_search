@@ -72,7 +72,7 @@ module Helper::AmazonEcs
 
   # asinsの配列から商品情報を取得する
   # codeを生成するために、label_idを渡してもらう必要がある
-  def req_lookup_api(user, asins, label_id)
+  def req_lookup_api(user, asins, label_id, condition)
     aws_api_init(user)
 
     ret_items = []
@@ -95,8 +95,13 @@ module Helper::AmazonEcs
         end
       end
 
+      prohibited_words = ProhibitedWord.where(user_id: user[:id])
       res.items.each do |item|
         insert_item = _format_item(item)
+        if (condition)
+          next unless _validate_item(insert_item, condition['is_prime'].to_s, prohibited_words, condition['min_offer_count'].to_s)
+          insert_item['search_condition_id'] = condition['id'] ? condition['id'] : ''
+        end
         # codeを生成する
         insert_item['code'] = generate_code(insert_item['asin'], label_id)
         ret_items.push(insert_item)

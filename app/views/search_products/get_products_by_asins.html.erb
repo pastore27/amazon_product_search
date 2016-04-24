@@ -1,0 +1,56 @@
+<h3>商品検索結果</h3>
+
+<ul class="list-inline">
+  <li>
+    <b>出品者ID</b>
+    <%= @search_info['seller_id'] %>
+  </li>
+  <li>
+    <b>出品者名</b>
+    <%= @search_info['seller_name'] %>
+  </li>
+  <% if @search_info['is_prime'] == '1' then %>
+  <li>
+    <b>Amazonプライム指定あり</b>
+  </li>
+  <% end %>
+</ul>
+
+<div class="alert alert-info" role="alert">該当する商品は <b><%= @item_total %></b> 件あります。</div>
+
+<table class="table table-striped table-hover">
+  <thead>
+    <tr>
+      <th>商品名</th>
+      <th>価格</th>
+      <th>ブランド</th>
+      <th>プライム</th>
+    </tr>
+  </thead>
+  <tbody id="tbody">
+    <% @items.each do |item| %>
+    <tr>
+      <td>
+        <% if item['url'] %>
+        <a href="<%= item['url'] %>" target="_blank"><%= item['title'] %></a>
+        <% else %>
+        <%= item['title'] %>
+        <% end %>
+      </td>
+      <td><%= item['price'] %></td>
+      <td><%= item['headline'] %></td>
+      <td><% if item['is_prime'] == '1' %>◯<% end %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= form_tag("/search_products_by_seller_id/create", method: :post) do %>
+<div class="pull-right">
+  <input type="hidden" name="seller_id" value="<%= @search_info['seller_id'] %>">
+  <input type="hidden" name="seller_name" value="<%= @search_info['seller_name'] %>">
+  <input type="hidden" name="is_prime" value="<% if @search_info['is_prime'] == '1' then %>1<% else %>0<% end %>">
+
+  <%= submit_tag "上記商品をラベル、検索条件に保存", :class => "btn btn-primary" %>
+</div>
+<% end %>
