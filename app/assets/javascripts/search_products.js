@@ -68,26 +68,52 @@ $(function() {
         $(this).prop('disabled', true);
 
         var seller_id = $('#seller_id').val();
+        var min_price = $('input[name=min_price]').val();
+        var max_price = $('input[name=max_price]').val();
         var page = 1;
-        var url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchant-items&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
-
+        var url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchant-items&timestamp=' + $.now()
+            + '&me=' + seller_id + '&low-price=' + min_price + '&high-price=' + max_price + '&page=';
         $.ajax({
             type: 'GET',
             url: url + 1,
             success: function(data) {
-                var match = $(data.responseText).find('#s-result-count').text().match(/([\d,]+)/g);
-                console.log(match);
-                var item_count_per_page = match[2];
-                if (item_count_per_page == 24) {
-                    url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchants&timestamp=' + $.now() + '&me=' + seller_id + '&page=';
+                // 商品件数の取得
+                var total_item_count;
+                // 検索結果xxx件中
+                var total_match = $(data.responseText).find('#s-result-count').text().match(/([\d,]+)件中/g);
+                console.log($(data.responseText).find('#s-result-count').text());
+                if ( $(data.responseText).find('#s-result-count').text().match(/([\d,]+)件中/g) ) {
+                    total_item_count = $(data.responseText).find('#s-result-count').text().match(/([\d,]+)件中/g)[0].replace( /件中/g, '').replace( /,/g , '');
+                }
+                // xx件の結果
+                if ( $(data.responseText).find('#s-result-count').text().match(/([\d,]+)件の結果/g) ) {
+                    total_item_count = $(data.responseText).find('#s-result-count').text().match(/([\d,]+)件の結果/g)[0].replace( /件の結果/g, '').replace( /,/g , '');
+                }
+
+                // 1ページの商品数を取得
+                var item_count_per_page = 24;
+                if ($(data.responseText).find('#result_59')[0]) {
+                    // このまま60件取得する
                     item_count_per_page = 60;
                 }
-                var max_item_count = 170 * item_count_per_page;
-                var item_count = match[0].replace( /,/g , '') > max_item_count ? max_item_count - 1 : match[0].replace( /,/g , '')
+                else if ($(data.responseText).find('#result_23')[0]) {
+                    item_count_per_page = 60;
+                    url = 'http://www.amazon.co.jp/s?ie=UTF8&lo=merchants&timestamp=' + $.now()
+                        + '&me=' + seller_id + '&low-price=' + min_price + '&high-price=' + max_price + '&page=';
+                }
+                else {
+                    // 24件以下と思われる
+                }
 
-                var last_page = Math.floor( item_count / item_count_per_page ) + 1
-                console.log(last_page);
-                $("<input>", {
+                console.log("url: " + url);
+                console.log("件数: " + total_item_count);
+                console.log("1ページあたり: " + item_count_per_page);
+
+                var max_item_count = 170 * item_count_per_page;
+                var item_count = total_item_count > max_item_count ? max_item_count - 1 : total_item_count;
+
+                var last_page = Math.floor( item_count / item_count_per_page ) + 1;
+                 $("<input>", {
                     type: 'hidden',
                     name: 'seller_name',
                     value: $(data.responseText).find('.nav-search-label').text()
@@ -104,7 +130,7 @@ $(function() {
                 $.when.apply($, request).done(function() {
                     for (var i = 1; i <= last_page; i++) {
                         console.log(i);
-                        var html = $(arguments[i-1][0].results[0]);
+                        var html = (last_page == 1) ?  $(arguments[i-1].results[0]) : $(arguments[i-1][0].results[0]);
 
                         for (var j = 0; j < item_count_per_page; j++) {
                             var index = item_count_per_page * (i-1) + j;
@@ -118,7 +144,7 @@ $(function() {
                             }
                         }
                     }
-                    $('#submit-button').click();
+　                   $('#submit-button').click();
                 });
             }
         });

@@ -57,6 +57,14 @@
 
 <% if use_seller_id %>
   <pre>収集できる商品数の上限は、 10,200 件 になります。</pre>
+  <h4>商品取得オプション</h4>
+  <div class="form-group">
+    <label>金額帯</label>
+    <div class="form-inline">
+      <input style="width:150px;" name="min_price" class="form-control">円 - 
+      <input style="width:150px;" name="max_price" class="form-control">円
+    </div>
+  </div>
   <h4>CSVオプション</h4>
   <form method="POST" action="/labels/<%= current_user.id %>/<%= @label.id %>/add_items_by_asins">
     <div class="form-group">

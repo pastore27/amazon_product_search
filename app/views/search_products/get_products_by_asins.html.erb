@@ -20,6 +20,18 @@
     <%= @search_info['min_offer_count'] %>
   </li>
   <% end %>
+  <% if @search_info['min_price'] != '' then %>
+  <li>
+    <b>下限金額</b>
+    <%= @search_info['min_price'] %> 円
+  </li>
+  <% end %>
+  <% if @search_info['max_price'] != '' then %>
+  <li>
+    <b>上限金額</b>
+    <%= @search_info['max_price'] %> 円
+  </li>
+  <% end %>
 </ul>
 
 <div class="alert alert-info" role="alert">該当する商品は <b><%= @item_total %></b> 件あります。</div>
