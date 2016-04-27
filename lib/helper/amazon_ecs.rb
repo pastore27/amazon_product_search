@@ -72,7 +72,7 @@ module Helper::AmazonEcs
 
   # asinsの配列から商品情報を取得する
   # codeを生成するために、label_idを渡してもらう必要がある
-  def req_lookup_api(user, asins, label_id, condition)
+  def req_lookup_api(user, asins, label_id, condition={})
     aws_api_init(user)
 
     ret_items = []
