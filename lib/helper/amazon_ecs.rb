@@ -348,7 +348,7 @@ module Helper::AmazonEcs
   end
 
   def create_csv_str(items, csv_option)
-    csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 /
+    csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 jan/
     # テンプレートファイルを開く
     caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
     csv_str = CSV.generate do |csv|
@@ -364,6 +364,7 @@ module Helper::AmazonEcs
         csv_body['headline']    = item['headline']
         csv_body['caption']     = ERB.new(caption_erb, nil, '-').result(binding)
         csv_body['explanation'] = csv_option['explanation'] if csv_option['explanation']
+        csv_body['jan']         = item['jan']
         # 金額調整
         if (csv_option['price_option_value'])  then
           if (csv_option['price_option_unit'] == 'yen') then
@@ -381,7 +382,7 @@ module Helper::AmazonEcs
   end
 
   def create_invalid_items_csv_str(items)
-    csv_header = %w/ code title /
+    csv_header = %w/ code title jan /
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
@@ -390,6 +391,7 @@ module Helper::AmazonEcs
         csv_body = {}
         csv_body['code'] = item['code']
         csv_body['title'] = item['title']
+        csv_body['jan'] = item['jan']
         csv << csv_body.values_at(*csv_header)
       end
     end
