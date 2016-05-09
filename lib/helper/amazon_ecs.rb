@@ -382,7 +382,7 @@ module Helper::AmazonEcs
   end
 
   def create_invalid_items_csv_str(items)
-    csv_header = %w/ code title jan /
+    csv_header = %w/ code name jan /
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
@@ -390,7 +390,7 @@ module Helper::AmazonEcs
       items.each do |item|
         csv_body = {}
         csv_body['code'] = item['code']
-        csv_body['title'] = item['title']
+        csv_body['name'] = item['title']
         csv_body['jan'] = item['jan']
         csv << csv_body.values_at(*csv_header)
       end
