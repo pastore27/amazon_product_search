@@ -351,7 +351,8 @@ module Helper::AmazonEcs
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 jan/
     # テンプレートファイルを開く
     caption_erb = ''
-    if (user_id == '6' || user_id == '2') then
+    puts user_id
+    if (user_id == 6 || user_id == 2) then
       caption_erb = Rails.root.join('app/views/template/caption_for_yahuoku.html.erb').read
     else
       caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
