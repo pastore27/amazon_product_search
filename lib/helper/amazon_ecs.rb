@@ -350,7 +350,12 @@ module Helper::AmazonEcs
   def create_csv_str(items, csv_option)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 jan/
     # テンプレートファイルを開く
-    caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
+    caption_erb
+    if (user_id == '6') then
+      caption_erb = Rails.root.join('app/views/template/caption_for_yahuoku.html.erb').read
+    else
+      caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
+    end
     csv_str = CSV.generate do |csv|
       # header の追加
       csv << csv_header
