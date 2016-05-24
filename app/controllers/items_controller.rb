@@ -68,7 +68,7 @@ class ItemsController < ApplicationController
     # csv出力
     csv_strs = []
     csv_items.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params), current_user.id)) if ele
     end
 
     tmp_zip = generate_tmp_zip_file_name()
@@ -132,7 +132,7 @@ class ItemsController < ApplicationController
     # csv出力
     csv_strs = []
     csv_items.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params), current_user.id)) if ele
     end
 
     tmp_zip = generate_tmp_zip_file_name()
@@ -190,7 +190,7 @@ class ItemsController < ApplicationController
     # csv出力
     csv_strs = []
     csv_items_in_stock.each_slice(1000).to_a.each do |ele|
-      csv_strs.push(create_csv_str(ele, generate_csv_option(params))) if ele
+      csv_strs.push(create_csv_str(ele, generate_csv_option(params), current_user.id)) if ele
     end
 
     tmp_zip = generate_tmp_zip_file_name()

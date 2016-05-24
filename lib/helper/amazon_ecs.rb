@@ -347,7 +347,7 @@ module Helper::AmazonEcs
               :filename => NKF::nkf('--sjis -Lw', file_name))
   end
 
-  def create_csv_str(items, csv_option)
+  def create_csv_str(items, csv_option, user_id)
     csv_header = %w/ path name code sub-code original-price price sale-price options headline caption abstract explanation additional1 additional2 additional3 jan/
     # テンプレートファイルを開く
     caption_erb = ''
