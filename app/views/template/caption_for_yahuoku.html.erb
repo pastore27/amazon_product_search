@@ -1,0 +1,191 @@
+<table style="width: 100%; border-collapse: collapse !important;">
+  <tbody>
+    <tr>
+      <th style="padding: 10px; border: 1px solid rgb(14, 88, 151); border-image: none; width: 20%; color: rgb(255, 255, 255); vertical-align: middle; white-space: nowrap; background-color: rgb(46, 150, 211);">
+        <br>
+        商品名
+        <br>
+        <br>
+      </th>
+      <td style="padding: 20px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
+        <%= item['title'] %>
+      </td>
+    </tr>
+    <tr>
+      <th style="padding: 10px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(255, 255, 255); vertical-align: middle; white-space: nowrap; background-color: rgb(46, 150, 211);">
+        ブランド
+      </th>
+      <td style="padding: 20px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
+        <%= item['headline'] %>
+      </td>
+    </tr>
+    <tr>
+      <th style="padding: 10px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(255, 255, 255); vertical-align: middle; white-space: nowrap; background-color: rgb(46, 150, 211);">
+        JAN
+      </th>
+      <td style="padding: 20px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
+        <%= item['jan'] %>
+      </td>
+    </tr>
+    <tr>
+      <th style="padding: 10px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(255, 255, 255); vertical-align: middle; white-space: nowrap; background-color: rgb(46, 150, 211);">
+        商品仕様
+      </th>
+      <td style="padding: 20px; border: 1px solid rgb(14, 88, 151); border-image: none; color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);">
+        <ul>
+          <br><center>
+            <font color=#FF6600 size=5><b>
+            </b></font><br><br>
+            <table width=600 cellpadding=2 cellspacing=2 bgcolor=#FF0000>
+              <tr><td bgcolor=#FFFFDD>
+                  <table cellspacing=3 cellpadding=4 border=0 width=100%>
+                    <tr><td bgcolor=#FF6600 colspan=2 align=left>
+                        <b><font color=#FFFFFF size=3>
+                            □商品詳細
+                        </font></b>
+                    </td></tr>
+                    <tr>
+                      <td width=5%></td>
+                      <td width=95% align=left>
+                        <font color=#330000 size=3>
+                          <ul>
+                            <%- item['features'].each do |feature| -%>
+                            <li><%= feature -%></li>
+                            <%- end -%>
+                          </ul>
+                        </font>
+                      </td>
+                    </tr>
+                  </table>
+                  <table cellspacing=3 cellpadding=4 border=0 width=100%>
+                    <tr><td bgcolor=#FF6600 colspan=2 align=left>
+                        <b><font color=#FFFFFF size=3>
+                            □支払詳細
+                        </font></b>
+                    </td></tr>
+                    <tr>
+                      <td width=5%></td>
+                      <td width=95% align=left>
+                        <font color=#330000 size=3>
+
+                          落札価格＋送料＝お支払金額<br>
+                          <br>
+                          ※お支払にかかります手数料はご負担くださいませ。<br>
+                          ・ヤフーかんたん決済<br>
+                          ・三菱東京UFJ銀行<br>
+                          <br>
+                          代引きは対応しておりません、ご了承くださいませ。<br>
+
+
+                        </font>
+                      </td>
+                    </tr>
+                  </table>
+                  <table cellspacing=3 cellpadding=4 border=0 width=100%>
+                    <tr><td bgcolor=#FF6600 colspan=2 align=left>
+                        <b><font color=#FFFFFF size=3>
+                            □発送詳細
+                        </font></b>
+                    </td></tr>
+                    <tr>
+                      <td width=5%></td>
+                      <td width=95% align=left>
+                        <font color=#330000 size=3>
+
+                          <b>全国一律800円</b><br>
+                          <br>
+                          ★発送方法<br>
+                          ヤマト<br>
+                          郵便局<br>
+                          宅急便<br>
+                          (ご購入者さまにはお選び頂けません)<br>
+                          <br>
+                          <br>
+                          ※注意事項(ご参照の上ご入札お願い致します。)<br>
+                          ・在庫の保管状況によりまして、同梱は一切出来ません。<br>
+                          ・送料は複数購入の際は1点ずつ請求させていただいきます。<br>
+                          ・局留め対応は致しておりません <br>
+                          <br>
+                          在庫の状況によりアマゾン契約倉庫に納付している在庫より<br>
+                          アマゾンの箱にて送付する場合もございます。<br>
+                          ご了承のほうよろしくお願い致します。
+
+                        </font>
+                      </td>
+                    </tr>
+                  </table>
+                  <table cellspacing=3 cellpadding=4 border=0 width=100%>
+                    <tr><td bgcolor=#FF6600 colspan=2 align=left>
+                        <b><font color=#FFFFFF size=3>
+                            □落札後の流れ
+                        </font></b>
+                    </td></tr>
+                    <tr>
+                      <td width=5%></td>
+                      <td width=95% align=left>
+                        <font color=#330000 size=3>
+
+                          取引を迅速に行うため、恐れ入りますが落札後<BR>落札者様よりご入金とかんたん取引への情報をご連絡をお願い致します。<BR> 
+                          <BR>取引ナビではなく必ずかんたん取引へお願い致します。
+                          <br>
+
+                        </font>
+                      </td>
+                    </tr>
+                  </table>
+                  <table cellspacing=3 cellpadding=4 border=0 width=100%>
+                    <tr><td bgcolor=#FF6600 colspan=2 align=left>
+                        <b><font color=#FFFFFF size=3>
+                            □注意事項
+                        </font></b>
+                    </td></tr>
+                    <tr>
+                      <td width=5%></td>
+                      <td width=95% align=left>
+                        <font color=#330000 size=3>
+
+                          ◆落札後2日間ご連絡がない場合はお客様都合で<br>
+                          キャンセル扱いとさせていただきます。<br>
+                          <br>
+                          ◆商品落札後48時間以内にご連絡3日以内にご入金頂ける方のみご入札お願い致します。<br>
+                          <br>
+                          <br>
+                          ◆評価が新規の方は申し訳ないのですが入札をお断りしています。入札された場合はキャンセルさせていただきます。<BR><br><br>
+                          <br><br>
+                          ◆ご新規ID、悪い評価の多い方は当方の判断で入札を取り消しさせていただく場合がございますご了承ください。<BR><br><br>
+                          ◆商品に対して悪い評価をされます方は、同等評価とさせていただきます。<BR><br><br>
+                          ◆サイズ/色/イメージ違いでの交換・返品はお断りをしております。 <BR><br><br>
+                          ◆画像の色合いは、当方の撮影状況、お客様がご使用されているPC環境等により、色の見え方に多少の誤差が生じる場合がございます。<BR><br><br>
+                          ◆落札後のキャンセルはお受けできません。<BR><br>
+                          <br>
+                          ◆商品不良などで、すぐに悪い評価をされる方のご入札はお断りしております。<br>
+                          <br>
+                          ◆当店では製品のサポートは行っておりませんので ご了承ください。<br>
+                          <br>
+                          ◆基本は入金確認後、即発送を心がけておりますが 人気商品のため在庫が切らす場合がございます。 <br>
+                          <br>
+                          ◆ノークレーム・ノーリターンでお願い致します。<br>
+                          <br>
+                          ◆以上をご確認の上ご入札をお願い致します。<br>
+                          <br>
+                          丁寧にそして迅速に発送を心がけます。<br>
+                          よろしくお願い申し上げます。
+
+                        </font>
+                      </td>
+                    </tr>
+                  </table>
+            </td></tr></table>
+            <br>
+            <font color=#999999 size=1>+ + +　この商品説明は</font> <a href=http://www.auclinks.com/ target=_blank><font color=#666666 size=1>オークションプレートメーカー２</font></a> <font color=#999999 size=1>で作成しました 　+ + +</font><font color=#FFFFFF size=1><br>No.202.005.009</font><br>
+          </center>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<p>
+</p>
+
