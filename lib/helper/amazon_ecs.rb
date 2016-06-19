@@ -352,8 +352,10 @@ module Helper::AmazonEcs
     # テンプレートファイルを開く
     caption_erb = ''
     puts user_id
-    if (user_id == 6 || user_id == 2) then
+    if (user_id == 6) then
       caption_erb = Rails.root.join('app/views/template/caption_for_yahuoku.html.erb').read
+    elsif (user_id == 9 || user_id == 7) then
+      caption_erb = Rails.root.join('app/views/template/caption_for_7.html.erb').read
     else
       caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
     end
