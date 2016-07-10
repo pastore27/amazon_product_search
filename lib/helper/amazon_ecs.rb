@@ -353,7 +353,7 @@ module Helper::AmazonEcs
     caption_erb = ''
     puts user_id
     if (user_id == 6) then
-      caption_erb = Rails.root.join('app/views/template/caption_for_yahuoku.html.erb').read
+      caption_erb = Rails.root.join('app/views/template/caption_for_6.html.erb').read
     elsif (user_id == 9 || user_id == 7) then
       caption_erb = Rails.root.join('app/views/template/caption_for_7.html.erb').read
     else
