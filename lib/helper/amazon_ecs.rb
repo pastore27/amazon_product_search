@@ -383,6 +383,11 @@ module Helper::AmazonEcs
         end
         csv_body['price'] = csv_body['price'].to_i
 
+        # ヤフオクの場合、商品タイトルは30字以内
+        if (user_id == 6 || user_id == 7 || user_id == 9) then
+          csv_body['name'] = csv_body['name'].slice(0,30).scrub('')
+        end
+
         csv << csv_body.values_at(*csv_header)
       end
     end
