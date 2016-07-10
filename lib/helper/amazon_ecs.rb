@@ -250,6 +250,7 @@ module Helper::AmazonEcs
 
   def _format_item(item)
     item_attributes = item.get_element('ItemAttributes')
+    editorial_reviews = item.get_element('EditorialReviews')
     main_img_url    = item.get('LargeImage/URL')
     sub_img_urls    = item.get_array('ImageSets/ImageSet/LargeImage/URL')
     # img_urlsにはmain_img_urlも含まれるので消す
@@ -262,6 +263,9 @@ module Helper::AmazonEcs
     price = offer_listing ? offer_listing.get('Price/Amount') : 0
     sale_price = offer_listing ? offer_listing.get('SalePrice/Amount') : 0
 
+    content = editorial_reviews ?
+                editorial_reviews.get('EditorialReview/Content') : ''
+
     insert_item = {
       'asin'         => item.get('ASIN'),
       'jan'          => item_attributes ? item_attributes.get('EAN') : '',
@@ -270,6 +274,7 @@ module Helper::AmazonEcs
       'price'        => sale_price || price,
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
+      'content'      => CGI.unescapeHTML(content),
       'is_prime'     => is_prime,
       'is_adult'     => item_attributes ? item_attributes.get('IsAdultProduct') : 0,
       'availability' => availability,
