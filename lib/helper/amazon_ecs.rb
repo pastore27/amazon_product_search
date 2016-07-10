@@ -357,9 +357,9 @@ module Helper::AmazonEcs
     # テンプレートファイルを開く
     caption_erb = ''
     puts user_id
-    if (user_id == 6) then
+    if (user_id == 9 || user_id == 6) then
       caption_erb = Rails.root.join('app/views/template/caption_for_6.html.erb').read
-    elsif (user_id == 9 || user_id == 7) then
+    elsif (user_id == 7) then
       caption_erb = Rails.root.join('app/views/template/caption_for_7.html.erb').read
     else
       caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
@@ -390,7 +390,7 @@ module Helper::AmazonEcs
 
         # ヤフオクの場合、商品タイトルは30字以内
         if (user_id == 6 || user_id == 7 || user_id == 9) then
-          csv_body['name'] = csv_body['name'].slice(0,30).scrub('')
+          csv_body['name'] = csv_body['name'].byteslice(0,30).scrub('')
         end
 
         csv << csv_body.values_at(*csv_header)
