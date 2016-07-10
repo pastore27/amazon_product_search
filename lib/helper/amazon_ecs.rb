@@ -263,8 +263,9 @@ module Helper::AmazonEcs
     price = offer_listing ? offer_listing.get('Price/Amount') : 0
     sale_price = offer_listing ? offer_listing.get('SalePrice/Amount') : 0
 
-    content = editorial_reviews ?
-                editorial_reviews.get('EditorialReview/Content') : ''
+    contents = editorial_reviews ?
+                 editorial_reviews.get_array('EditorialReview/Content') : []
+    contents = contents.map { |content| CGI.unescapeHTML(content) }
 
     insert_item = {
       'asin'         => item.get('ASIN'),
@@ -274,7 +275,7 @@ module Helper::AmazonEcs
       'price'        => sale_price || price,
       'headline'     => item_attributes ? item_attributes.get('Brand') : '',
       'features'     => item_attributes ? item_attributes.get_array('Feature') : '',
-      'content'      => CGI.unescapeHTML(content),
+      'contents'     => contents,
       'is_prime'     => is_prime,
       'is_adult'     => item_attributes ? item_attributes.get('IsAdultProduct') : 0,
       'availability' => availability,
@@ -390,7 +391,7 @@ module Helper::AmazonEcs
 
         # ヤフオクの場合、商品タイトルは30字以内
         if (user_id == 6 || user_id == 7 || user_id == 9) then
-          csv_body['name'] = csv_body['name'].byteslice(0,30).scrub('')
+          csv_body['name'] = csv_body['name'].byteslice(0,29).scrub('')
         end
 
         csv << csv_body.values_at(*csv_header)
