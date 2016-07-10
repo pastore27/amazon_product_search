@@ -57,7 +57,7 @@ class ItemsController < ApplicationController
                          'price'        => fetched_item['price'].to_i,
                          'headline'     => fetched_item['headline'],
                          'features'     => fetched_item['features'],
-                         'content'      => fetched_item['content'],
+                         'contents'     => fetched_item['contents'],
                          'main_img_url' => fetched_item['main_img_url'],
                          'sub_img_urls' => fetched_item['sub_img_urls']
                        })
@@ -122,7 +122,7 @@ class ItemsController < ApplicationController
                          'price'        => fetched_item['price'].to_i,
                          'headline'     => fetched_item['headline'],
                          'features'     => fetched_item['features'],
-                         'content'      => fetched_item['content'],
+                         'contents'     => fetched_item['contents'],
                          'main_img_url' => fetched_item['main_img_url'],
                          'sub_img_urls' => fetched_item['sub_img_urls']
                        })
@@ -181,7 +181,7 @@ class ItemsController < ApplicationController
                        'price'        => stored_item['price'].to_i,
                        'headline'     => stored_item['headline'],
                        'features'     => stored_item['features'],
-                       'content'      => stored_item['content'],
+                       'contents'     => stored_item['contents'],
                        'main_img_url' => stored_item['main_img_url'],
                        'sub_img_urls' => stored_item['sub_img_urls']
                      })

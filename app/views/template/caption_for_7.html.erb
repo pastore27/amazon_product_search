@@ -45,14 +45,20 @@
                               </ul>
                             </td>
                           </tr>
+                          <tr>
+                            <td align=left>
+                              <ul>
+                                <%- item['contents'].each do |content| -%>
+                                <li>
+                                  <font color=#666666 size=2>
+                                    <%= item['content'] %>
+                                  </font>
+                                </li>
+                                <%- end -%>
+                              </ul>
+                            </td>
+                          </tr>
                         </table>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <font color=#666666 size=2>
-                          <%= item['content'] %>
-                        </font>
                       </td>
                     </tr>
                   </table>

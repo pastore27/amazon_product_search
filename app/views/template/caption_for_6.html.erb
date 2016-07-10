@@ -18,7 +18,8 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>
+                      <td width=5%></td>
+                      <td width=95% align=left>
                         <font color=#330000 size=4>
                           <%= item['title'] %>
                         </font>
@@ -41,7 +42,11 @@
                       <td width=5%></td>
                       <td width=95% align=left>
                         <font color=#330000 size=3>
-                          <%= item['content'] %>
+                          <ul>
+                            <%- item['contents'].each do |content| -%>
+                            <li><%= content -%></li>
+                            <%- end -%>
+                          </ul>
                         </font>
                       </td>
                     </tr>

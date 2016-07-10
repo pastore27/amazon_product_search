@@ -39,7 +39,11 @@
         </ul>
       </td>
       <td>
-        <%= item['content'] %>
+        <ul>
+          <%- item['contents'].each do |content| -%>
+          <li><%= content -%></li>
+          <%- end -%>
+        </ul>
       </td>
     </tr>
   </tbody>
