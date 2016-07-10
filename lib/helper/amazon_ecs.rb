@@ -391,7 +391,7 @@ module Helper::AmazonEcs
 
         # ヤフオクの場合、商品タイトルは30字以内
         if (user_id == 6 || user_id == 7 || user_id == 9) then
-          csv_body['name'] = csv_body['name'].byteslice(0,59).scrub('')
+          csv_body['name'] = csv_body['name'].byteslice(0,60)
         end
 
         csv << csv_body.values_at(*csv_header)
