@@ -243,7 +243,7 @@ module Helper::AmazonEcs
 
   def _include_prohibited_word(item, prohibited_words)
     prohibited_words.each do |prohibited_word|
-      return true if "#{item['title']} #{item['headline']} #{item['features'].join(' ')}" =~ /#{prohibited_word.name}/
+      return true if "#{item['title']} #{item['headline']} #{item['features'].join(' ')} #{item['contents'].join(' ')}" =~ /#{prohibited_word.name}/
     end
     return false
   end
