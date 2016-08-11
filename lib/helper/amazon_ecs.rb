@@ -362,6 +362,8 @@ module Helper::AmazonEcs
       caption_erb = Rails.root.join('app/views/template/caption_for_6.html.erb').read
     elsif (user_id == 7) then
       caption_erb = Rails.root.join('app/views/template/caption_for_7.html.erb').read
+    elsif (user_id == 8) then
+      caption_erb = Rails.root.join('app/views/template/caption_for_8.html.erb').read
     else
       caption_erb = Rails.root.join('app/views/template/caption.html.erb').read
     end
