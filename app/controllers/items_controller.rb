@@ -33,11 +33,22 @@ class ItemsController < ApplicationController
       end
     end
 
+    filtered_items = []
+    # ヤフオクアカウント同士では重複のないように対応
+    if (current_user.id == 6 || current_user.id == 7 || current_user.id == 8 || current_user.id == 9) then
+      registered_items = Item.where(user_id: [6, 7, 8, 9])
+      fetched_items.each do |item|
+        filtered_items.push(item) if !registered_items.find{ |ele| ele.asin == item['asin'] }
+      end
+    else
+      filtered_items = fetched_items
+    end
+
     # csv出力するデータを選定
     csv_items = []
 
     # 新規商品データをdbに保存
-    fetched_items.each do |fetched_item|
+    filtered_items.each do |fetched_item|
       asin = fetched_item['asin']
       code = generate_code(asin, label_id)
       item = Item.new(
@@ -98,11 +109,22 @@ class ItemsController < ApplicationController
     # APIリクエスト数の最大値は、search_conditions.length * 10
     fetched_items = params['asins'] ? req_lookup_api(to_user_hash(current_user), params['asins'], label_id, search_condition) : []
 
+    filtered_items = []
+    # ヤフオクアカウント同士では重複のないように対応
+    if (current_user.id == 6 || current_user.id == 7 || current_user.id == 8 || current_user.id == 9) then
+      registered_items = Item.where(user_id: [6, 7, 8, 9])
+      fetched_items.each do |item|
+        filtered_items.push(item) if !registered_items.find{ |ele| ele.asin == item['asin'] }
+      end
+    else
+      filtered_items = fetched_items
+    end
+
     # csv出力するデータを選定
     csv_items = []
 
     # 新規商品データをdbに保存
-    fetched_items.each do |fetched_item|
+    filtered_items.each do |fetched_item|
       asin = fetched_item['asin']
       code = generate_code(asin, label_id)
       item = Item.new(
